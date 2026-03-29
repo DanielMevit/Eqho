@@ -1,0 +1,7 @@
+moonshine-voice>=0.0.51
+sounddevice
+pystray
+Pillow
+keyboard
+pynput
+pyperclip

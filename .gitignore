@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.spec.bak
+venv/
+.venv/
+*.egg
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# App data (not secrets, but local)
+*.log
