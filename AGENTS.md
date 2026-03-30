@@ -36,7 +36,7 @@
   - `audio.py` -- device enumeration (sounddevice)
   - `overlay.py` -- floating transcription preview (tkinter, bottom-center)
   - `hotkey.py` -- global hotkey (keyboard library, toggle + hold modes)
-  - `injector.py` -- text injection into active app (pynput + pyperclip)
+  - `injector.py` -- text injection into active app (pynput + pyperclip + ctypes Win32 for window focus restore)
   - `tray.py` -- system tray icon and menu (pystray + Pillow), loads logo-based PNGs from `assets/`
   - `main.py` -- wires everything together, manages activate/deactivate lifecycle
 - Settings persist in `%AppData%\Ekho\settings.json`.
@@ -45,6 +45,7 @@
 - Whisper's built-in `vad_filter` is too aggressive and discards valid speech. We use our own energy-based VAD instead (silence threshold 0.003 RMS, 1.2s silence timeout).
 - The CUDA smoke test in `_ensure_model()` catches missing cuBLAS at startup rather than at first transcription.
 - `keyboard` library requires the terminal to stay open (no console-free mode without PyInstaller packaging).
+- `keyboard.unhook_all()` must never be used -- it kills all hooks globally (including pystray internals). Use targeted `unhook()` / `remove_hotkey()` per hook.
 - `large-v3` is forced to CPU (too large for 6GB VRAM). All other models (including distil and turbo) run on GPU.
 
 ## Future architecture (Phase 4)
@@ -54,7 +55,7 @@
 - The current Python stack is for development velocity; whisper.cpp is for shipping.
 
 ## Versioning
-- Current version line: **v0.1.x** -- patch numbers increment freely.
+- Current version line: **v0.1.4** -- patch numbers increment freely.
 - Tag releases as `vMAJOR.MINOR.PATCH` when publishing milestones.
 
 ## Public release strategy

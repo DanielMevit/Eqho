@@ -45,7 +45,7 @@ HOTKEY_MODES = ("toggle", "hold")
 @dataclass
 class Settings:
     language: str = "en"
-    hotkey: str = "ctrl+shift+space"
+    hotkey: str = "ctrl+alt+d"
     hotkey_mode: str = "toggle"  # "toggle" or "hold"
     model_size: str = "distil-large-v3"
     audio_device: Optional[int] = None  # None = system default

@@ -11,7 +11,7 @@ from .settings import Settings
 from .transcriber import VoiceTranscriber
 from .overlay import TranscriptionOverlay
 from .hotkey import HotkeyManager
-from .injector import type_text
+from .injector import type_text, get_foreground_window, set_foreground_window
 from .tray import TrayApp
 
 logging.basicConfig(
@@ -34,6 +34,7 @@ class App:
         self.overlay = TranscriptionOverlay(self.settings)
         self._pending_text: list[str] = []
         self._lock = threading.Lock()
+        self._target_hwnd: int = 0  # window to paste into
 
         self.transcriber.set_callbacks(
             on_partial=self._on_partial,
@@ -67,7 +68,8 @@ class App:
     # -- Activation control ----------------------------------------------------
 
     def activate(self) -> None:
-        log.info("Dictation activated")
+        self._target_hwnd = get_foreground_window()
+        log.info("Dictation activated (target window: %s)", self._target_hwnd)
         self._pending_text.clear()
         self.overlay.show("Listening...")
         self.tray.set_active(True)
@@ -84,7 +86,10 @@ class App:
             self._pending_text.clear()
 
         if full_text:
-            time.sleep(0.15)
+            time.sleep(0.4)  # wait for modifier keys to fully release
+            if self._target_hwnd:
+                set_foreground_window(self._target_hwnd)
+                time.sleep(0.15)  # let the window come to focus
             type_text(full_text, use_clipboard=self.settings.auto_paste)
             log.info("Injected text: %s", full_text)
 

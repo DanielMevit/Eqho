@@ -26,6 +26,8 @@ class HotkeyManager:
         self._active = False
         self._registered = False
         self._lock = threading.Lock()
+        self._key_hooks: list = []  # from on_press_key / on_release_key
+        self._hotkey_handler = None  # from add_hotkey
 
     def register(self) -> None:
         if self._registered:
@@ -35,27 +37,35 @@ class HotkeyManager:
         mode = self._settings.hotkey_mode
 
         if mode == "hold":
-            keyboard.on_press_key(
+            self._key_hooks.append(keyboard.on_press_key(
                 self._last_key(combo),
                 self._on_hold_press,
                 suppress=False,
-            )
-            keyboard.on_release_key(
+            ))
+            self._key_hooks.append(keyboard.on_release_key(
                 self._last_key(combo),
                 self._on_hold_release,
                 suppress=False,
-            )
+            ))
         else:
-            keyboard.add_hotkey(combo, self._on_toggle, suppress=False)
+            self._hotkey_handler = keyboard.add_hotkey(combo, self._on_toggle, suppress=False)
 
         self._registered = True
         log.info("Hotkey registered: %s (%s mode)", combo, mode)
 
     def unregister(self) -> None:
-        try:
-            keyboard.unhook_all()
-        except Exception:
-            pass
+        for hook in self._key_hooks:
+            try:
+                keyboard.unhook(hook)
+            except (ValueError, KeyError):
+                pass
+        self._key_hooks.clear()
+        if self._hotkey_handler is not None:
+            try:
+                keyboard.remove_hotkey(self._hotkey_handler)
+            except (ValueError, KeyError):
+                pass
+            self._hotkey_handler = None
         self._registered = False
         self._active = False
 

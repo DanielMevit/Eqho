@@ -1,5 +1,6 @@
 """Inject transcribed text into the currently focused application."""
 
+import ctypes
 import logging
 import time
 
@@ -9,6 +10,18 @@ from pynput.keyboard import Controller, Key
 log = logging.getLogger(__name__)
 
 _kb = Controller()
+_user32 = ctypes.windll.user32
+
+
+def get_foreground_window() -> int:
+    """Return the handle of the currently focused window."""
+    return _user32.GetForegroundWindow()
+
+
+def set_foreground_window(hwnd: int) -> None:
+    """Bring the given window to the foreground."""
+    if hwnd:
+        _user32.SetForegroundWindow(hwnd)
 
 
 def type_text(text: str, *, use_clipboard: bool = True) -> None:
@@ -33,6 +46,14 @@ def _paste_via_clipboard(text: str) -> None:
         old = pyperclip.paste()
     except Exception:
         pass
+
+    # Ensure all modifier keys are released before pasting
+    for key in (Key.ctrl, Key.ctrl_l, Key.ctrl_r, Key.shift, Key.shift_l, Key.shift_r, Key.alt, Key.alt_l, Key.alt_r):
+        try:
+            _kb.release(key)
+        except Exception:
+            pass
+    time.sleep(0.05)
 
     pyperclip.copy(text)
     time.sleep(0.05)

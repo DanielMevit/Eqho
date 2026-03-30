@@ -4,6 +4,17 @@ All notable changes to Ekho are tracked here.
 
 Date format: `YYYY-MM-DD`.
 
+## [0.1.4] - 2026-03-30
+
+### Fixed
+- Hotkey mode switching (toggle ↔ hold) no longer crashes the app. Replaced `keyboard.unhook_all()` with targeted hook removal.
+- Text injection now pastes into the correct window (e.g. Word, browser) instead of the PowerShell terminal. Captures the foreground window handle on activation and restores focus before pasting.
+- Modifier key release before paste — explicitly releases all modifier keys before simulating Ctrl+V to prevent ghost key conflicts.
+
+### Changed
+- Default hotkey changed from `Ctrl+Shift+Space` to **`Ctrl+Alt+D`** (D for Dictate). Space in the combo was interfering with normal typing.
+- Increased post-dictation delay (0.15s → 0.4s) to allow modifier keys to fully release before paste injection.
+
 ## [0.1.3] - 2026-03-30
 
 ### Changed
