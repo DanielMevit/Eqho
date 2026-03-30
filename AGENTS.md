@@ -1,4 +1,4 @@
-# Codex rules for this repo (Echo)
+# Codex rules for this repo (Ekho)
 
 ## Reading ritual
 - At session start, read SOUL.md, then AGENTS.md, then README.md silently and obey them.
@@ -26,21 +26,41 @@
 ## Architecture
 - Python 3.10+, runs on Windows 10/11.
 - Entry point: `run.py` (calls `src.main.main()`).
-- Transcription engine: Moonshine Voice (`moonshine-voice` pip package, MIT license).
+- Transcription engine: faster-whisper (CTranslate2 backend, MIT license). Will migrate to whisper.cpp in Phase 4 for native distribution.
+- Default model: `distil-large-v3` (English-optimized, ~6x faster than large-v3). Multilingual models also available.
+- GPU: CUDA Toolkit 12.x required for GPU inference (NVIDIA). Auto-falls back to CPU if cuBLAS DLLs are missing.
+- Models cached to `D:\EkhoModels` (not in the repo). First run downloads from HuggingFace.
 - Each responsibility lives in its own module inside `src/`:
-  - `settings.py` -- config persistence (`%AppData%\Echo\settings.json`)
-  - `transcriber.py` -- Moonshine Voice wrapper
-  - `audio.py` -- device enumeration
-  - `overlay.py` -- floating transcription preview (tkinter)
-  - `hotkey.py` -- global hotkey (keyboard library)
+  - `settings.py` -- config persistence (`%AppData%\Ekho\settings.json`)
+  - `transcriber.py` -- faster-whisper wrapper with energy-based VAD, CUDA fallback to CPU
+  - `audio.py` -- device enumeration (sounddevice)
+  - `overlay.py` -- floating transcription preview (tkinter, bottom-center)
+  - `hotkey.py` -- global hotkey (keyboard library, toggle + hold modes)
   - `injector.py` -- text injection into active app (pynput + pyperclip)
-  - `tray.py` -- system tray icon and menu (pystray + Pillow)
-  - `main.py` -- wires everything together
-- Settings persist in `%AppData%\Echo\settings.json`.
+  - `tray.py` -- system tray icon and menu (pystray + Pillow), loads logo-based PNGs from `assets/`
+  - `main.py` -- wires everything together, manages activate/deactivate lifecycle
+- Settings persist in `%AppData%\Ekho\settings.json`.
+
+## Known quirks
+- Whisper's built-in `vad_filter` is too aggressive and discards valid speech. We use our own energy-based VAD instead (silence threshold 0.003 RMS, 1.2s silence timeout).
+- The CUDA smoke test in `_ensure_model()` catches missing cuBLAS at startup rather than at first transcription.
+- `keyboard` library requires the terminal to stay open (no console-free mode without PyInstaller packaging).
+- `large-v3` is forced to CPU (too large for 6GB VRAM). All other models (including distil and turbo) run on GPU.
+
+## Future architecture (Phase 4)
+- The commercial/public release will use **whisper.cpp** (pure C++) instead of faster-whisper (Python + CTranslate2).
+- App shell will likely be Tauri (Rust) or C#/WPF instead of tkinter + pystray.
+- This eliminates the Python runtime dependency and makes packaging a single lightweight installer.
+- The current Python stack is for development velocity; whisper.cpp is for shipping.
 
 ## Versioning
 - Current version line: **v0.1.x** -- patch numbers increment freely.
 - Tag releases as `vMAJOR.MINOR.PATCH` when publishing milestones.
+
+## Public release strategy
+- The repo will eventually go public. Internal docs (SOUL.md, AGENTS.md, ROADMAP.md, TODO.md) are **not** for public eyes.
+- When ready: strip internal docs, write a clean public README, and package a release binary.
+- Until then, develop normally with the full doc set.
 
 ## Commit & push
 - Commit message format: `type(scope): short description` (conventional commits).

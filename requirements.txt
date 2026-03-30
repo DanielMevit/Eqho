@@ -1,5 +1,6 @@
-moonshine-voice>=0.0.51
+faster-whisper>=1.2.1
 sounddevice
+numpy
 pystray
 Pillow
 keyboard

@@ -1,4 +1,4 @@
-"""Echo -- always-on dictation app entry point.
+"""Ekho -- always-on dictation app entry point.
 
 Wires together: settings, transcriber, overlay, hotkey, tray, and injector.
 """
@@ -19,7 +19,10 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     datefmt="%H:%M:%S",
 )
-log = logging.getLogger("echo")
+# Silence noisy libraries
+for _quiet in ("PIL", "httpx", "httpcore", "urllib3", "huggingface_hub"):
+    logging.getLogger(_quiet).setLevel(logging.WARNING)
+log = logging.getLogger("ekho")
 
 
 class App:
@@ -58,7 +61,8 @@ class App:
     def _on_complete(self, text: str) -> None:
         with self._lock:
             self._pending_text.append(text)
-        log.info("Completed segment: %s", text)
+        full_so_far = " ".join(self._pending_text)
+        self.overlay.update_text(full_so_far)
 
     # -- Activation control ----------------------------------------------------
 
@@ -101,9 +105,12 @@ class App:
     # -- Lifecycle -------------------------------------------------------------
 
     def run(self) -> None:
-        log.info("Echo starting...")
+        log.info("Ekho starting...")
         log.info(
-            "Hotkey: %s (%s mode)", self.settings.hotkey, self.settings.hotkey_mode
+            "Model: %s | Hotkey: %s (%s mode)",
+            self.settings.model_size,
+            self.settings.hotkey,
+            self.settings.hotkey_mode,
         )
 
         self.overlay.start()
@@ -115,6 +122,7 @@ class App:
 
     def _preload_model(self) -> None:
         try:
+            log.info("Pre-loading model (this may download ~1.5 GB on first run)...")
             self.transcriber._ensure_model()
             log.info("Model pre-loaded and ready.")
         except Exception as e:

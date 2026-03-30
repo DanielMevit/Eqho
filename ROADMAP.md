@@ -1,16 +1,20 @@
 # Roadmap
 
-Planned features and milestones for Echo.
+Planned features and milestones for Ekho.
 
 ## Phase 1 -- Core Dictation (v0.1.x) [done]
-- [x] Moonshine Voice integration with streaming transcription
+- [x] faster-whisper integration with energy-based VAD and streaming transcription
 - [x] System tray with start/stop/quit
 - [x] Global hotkey (toggle + hold-to-talk modes)
 - [x] Floating overlay showing real-time partial text
 - [x] Auto-paste into active window (clipboard + simulated typing)
 - [x] Settings persistence to JSON
-- [x] Multi-language support (8 languages)
+- [x] Multi-language support (13 languages)
+- [x] Model selection (Tiny through Large v3, Distil models, Turbo)
 - [x] PyInstaller packaging
+- [x] CUDA GPU acceleration with automatic CPU fallback
+- [x] Tray icon from project logo (active/inactive states)
+- [x] Distil-Whisper as default (English-optimized, fastest high-quality model)
 
 ## Phase 2 -- Polish & Reliability (v0.2.x) [next]
 - [ ] Audio device selector in tray menu (pick which microphone)
@@ -26,17 +30,40 @@ Planned features and milestones for Echo.
 - [ ] Voice commands (e.g. "new line", "period", "delete that")
 - [ ] Per-application paste mode rules (some apps need typing, not clipboard)
 - [ ] Sound feedback (subtle chime on start/stop)
-- [ ] Intent recognition via Moonshine Voice IntentRecognizer
+- [ ] Whisper prompt/prefix for domain-specific vocabulary
 
-## Phase 4 -- Distribution & Ecosystem (v0.4.x)
-- [ ] Signed Windows installer (MSIX or Inno Setup)
+## Phase 4 -- whisper.cpp Migration & Native App (v0.4.x)
+Migrate from Python + faster-whisper to a native engine for a clean, distributable product.
+- [ ] Replace faster-whisper with **whisper.cpp** (C++ engine, zero Python dependency)
+- [ ] Evaluate Tauri (Rust) or C#/WPF for the app shell (replacing tkinter overlay + pystray)
+- [ ] Dynamic model download on first launch (keep installer small)
+- [ ] Ship as a single lightweight installer (MSI, MSIX, or Inno Setup)
+- [ ] Signed Windows binary
 - [ ] Auto-update mechanism
 - [ ] Plugin system for custom post-processing (e.g. punctuation cleanup, formatting)
-- [ ] macOS support (pystray + different hotkey backend)
-- [ ] REST API mode for integration with other tools
+
+### Why whisper.cpp for distribution
+- Pure C/C++, no Python runtime, no 200MB+ PyInstaller bundle
+- Runs fast on CPU out of the box; supports CUDA, DirectCompute, and Vulkan for GPU
+- Native bindings for C#, Rust, Go, Node.js (Whisper.net for C#, whisper-rs for Rust)
+- End-user experience: install and run, no venv, no pip, no CUDA Toolkit headaches
+- Current faster-whisper stack is ideal for development velocity; whisper.cpp is for shipping
+
+## Phase 5 -- Public Launch Prep (v1.0)
+This is the final gate before going public. Internal .md files (SOUL, AGENTS, ROADMAP, TODO) stay private.
+- [ ] Remove or relocate internal docs (SOUL.md, AGENTS.md, ROADMAP.md, TODO.md) from the public repo
+- [ ] Write a clean public README with screenshots, feature highlights, and install instructions
+- [ ] Create a GitHub Releases page with pre-built installer
+- [ ] Add LICENSE file (pick license -- MIT, Apache 2.0, etc.)
+- [ ] Add CONTRIBUTING.md if accepting community contributions
+- [ ] Optional: simple landing page (GitHub Pages or standalone)
+- [ ] Optional: demo GIF / video showing Ekho in action
+- [ ] Final QA pass -- test on a clean Windows install
+- [ ] Flip repo from private to public
 
 ## Stretch Goals
 - [ ] Speaker identification (who's talking)
 - [ ] Real-time translation (transcribe in one language, output in another)
 - [ ] System audio capture (transcribe meetings/calls, not just mic)
-- [ ] Electron or Tauri GUI replacing tkinter overlay
+- [ ] macOS support
+- [ ] REST API mode for integration with other tools

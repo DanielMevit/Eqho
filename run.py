@@ -1,4 +1,4 @@
-"""Top-level launcher script for Echo."""
+"""Top-level launcher script for Ekho."""
 
 from src.main import main
 

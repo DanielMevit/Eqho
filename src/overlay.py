@@ -40,7 +40,7 @@ class TranscriptionOverlay:
 
     def _run_tk(self) -> None:
         self._root = tk.Tk()
-        self._root.title("Echo")
+        self._root.title("Ekho")
         self._root.overrideredirect(True)
         self._root.attributes("-topmost", True)
         self._root.attributes("-alpha", self._settings.overlay_opacity)
