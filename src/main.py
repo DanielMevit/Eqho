@@ -1,4 +1,4 @@
-"""Ekho -- always-on dictation app entry point.
+"""Eqho -- always-on dictation app entry point.
 
 Wires together: settings, transcriber, overlay, hotkey, tray, and injector.
 """
@@ -6,12 +6,31 @@ Wires together: settings, transcriber, overlay, hotkey, tray, and injector.
 import logging
 import threading
 import time
+from typing import Optional
 
-from .settings import Settings
+from .settings import Settings, VOLUME_DUCK_OPTIONS
 from .transcriber import VoiceTranscriber
 from .overlay import TranscriptionOverlay
 from .hotkey import HotkeyManager
 from .injector import type_text, get_foreground_window, set_foreground_window
+
+# Silent volume control via Windows Core Audio API (pycaw)
+try:
+    from pycaw.pycaw import AudioUtilities
+    from comtypes import GUID, CoInitialize
+    _GUID_NULL = GUID()
+    _HAS_VOLUME_CTL = True
+except Exception:
+    _HAS_VOLUME_CTL = False
+
+
+def _get_volume_ctl():
+    """Get a fresh volume endpoint (must be called per-thread due to COM)."""
+    try:
+        CoInitialize()
+        return AudioUtilities.GetSpeakers().EndpointVolume
+    except Exception:
+        return None
 from .tray import TrayApp
 
 logging.basicConfig(
@@ -22,7 +41,7 @@ logging.basicConfig(
 # Silence noisy libraries
 for _quiet in ("PIL", "httpx", "httpcore", "urllib3", "huggingface_hub"):
     logging.getLogger(_quiet).setLevel(logging.WARNING)
-log = logging.getLogger("ekho")
+log = logging.getLogger("eqho")
 
 
 class App:
@@ -35,6 +54,7 @@ class App:
         self._pending_text: list[str] = []
         self._lock = threading.Lock()
         self._target_hwnd: int = 0  # window to paste into
+        self._saved_volume: Optional[float] = None  # for volume ducking
 
         self.transcriber.set_callbacks(
             on_partial=self._on_partial,
@@ -67,9 +87,46 @@ class App:
 
     # -- Activation control ----------------------------------------------------
 
+    def _duck_volume(self) -> None:
+        """Silently lower system volume based on user setting."""
+        if not _HAS_VOLUME_CTL:
+            return
+        multiplier = VOLUME_DUCK_OPTIONS.get(self.settings.volume_duck)
+        if multiplier is None:  # "off"
+            return
+        try:
+            ctl = _get_volume_ctl()
+            if not ctl:
+                return
+            self._saved_volume = ctl.GetMasterVolumeLevelScalar()
+            if multiplier == 0.0:
+                ctl.SetMute(True, _GUID_NULL)
+            else:
+                ctl.SetMasterVolumeLevelScalar(self._saved_volume * multiplier, _GUID_NULL)
+            log.info("Volume ducked: %.0f%% → %s", self._saved_volume * 100,
+                     "muted" if multiplier == 0.0 else f"{self._saved_volume * multiplier * 100:.0f}%")
+        except Exception as e:
+            log.debug("Volume duck failed: %s", e)
+
+    def _restore_volume(self) -> None:
+        """Silently restore system volume to previous level."""
+        if not _HAS_VOLUME_CTL or self._saved_volume is None:
+            return
+        try:
+            ctl = _get_volume_ctl()
+            if not ctl:
+                return
+            ctl.SetMute(False, _GUID_NULL)
+            ctl.SetMasterVolumeLevelScalar(self._saved_volume, _GUID_NULL)
+            log.info("Volume restored to %.0f%%.", self._saved_volume * 100)
+            self._saved_volume = None
+        except Exception as e:
+            log.debug("Volume restore failed: %s", e)
+
     def activate(self) -> None:
         self._target_hwnd = get_foreground_window()
         log.info("Dictation activated (target window: %s)", self._target_hwnd)
+        self._duck_volume()
         self._pending_text.clear()
         self.overlay.show("Listening...")
         self.tray.set_active(True)
@@ -78,6 +135,7 @@ class App:
     def deactivate(self) -> None:
         log.info("Dictation deactivated")
         self.transcriber.stop()
+        self._restore_volume()
         self.tray.set_active(False)
         self.overlay.hide()
 
@@ -111,7 +169,7 @@ class App:
     # -- Lifecycle -------------------------------------------------------------
 
     def run(self) -> None:
-        log.info("Ekho starting...")
+        log.info("Eqho starting...")
         log.info(
             "Model: %s | Hotkey: %s (%s mode)",
             self.settings.model_size,
@@ -136,18 +194,35 @@ class App:
 
     def quit(self) -> None:
         log.info("Shutting down...")
+        self._restore_volume()  # always unmute on exit
         self.hotkey.unregister()
         self.transcriber.shutdown()
         self.overlay.shutdown()
         self.settings.save()
 
 
+def _emergency_unmute() -> None:
+    """Last resort: unmute system audio on any exit."""
+    try:
+        if _HAS_VOLUME_CTL:
+            ctl = _get_volume_ctl()
+            if ctl:
+                ctl.SetMute(False, _GUID_NULL)
+    except Exception:
+        pass
+
+
 def main() -> None:
+    import atexit
+    atexit.register(_emergency_unmute)
+
     app = App()
     try:
         app.run()
     except KeyboardInterrupt:
         app.quit()
+    finally:
+        _emergency_unmute()
 
 
 if __name__ == "__main__":

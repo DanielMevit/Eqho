@@ -1,4 +1,4 @@
-# Ekho
+# Eqho
 
 **Your voice, everywhere.**
 
@@ -9,7 +9,7 @@ An always-on dictation app that runs in your system tray. Press a hotkey, speak,
 - **Real-time transcription** -- see words appear as you speak via a floating overlay
 - **100% local** -- no cloud, no API keys, everything runs on your machine
 - **System tray** -- runs silently in the background
-- **Global hotkey** -- works in any application (default: `Ctrl+Shift+D`)
+- **Global hotkey** -- works in any application (default: `Alt+Q`)
 - **Toggle or hold-to-talk** modes
 - **Auto-paste** into the active window via clipboard or simulated keystrokes
 - **Multi-language** -- English, Spanish, Mandarin, Japanese, Korean, Vietnamese, Arabic, Ukrainian, French, German, Portuguese, Russian, Italian
@@ -40,16 +40,16 @@ python run.py
 
 The app will:
 1. Appear as an icon in your system tray (bottom-right, may be behind the `^` arrow)
-2. Pre-load the Distil-Large-v3 model in the background (~1.5 GB, cached in `D:\EkhoModels` after first download)
-3. Wait for you to press **Ctrl+Shift+D**
+2. Pre-load the Distil-Large-v3 model in the background (~1.5 GB, cached in `D:\EqhoModels` after first download)
+3. Wait for you to press **Alt+Q**
 
 ### How to dictate
 
 1. Click into the app where you want text (Word, browser, Notepad, etc.)
-2. Press **Ctrl+Shift+D** -- a floating bar appears saying "Listening..."
+2. Press **Alt+Q** -- a floating bar appears saying "Listening..."
 3. Speak naturally, pause ~1-2 seconds between phrases
 4. The overlay updates with your transcribed words
-5. Press **Ctrl+Shift+D** again to stop -- text is pasted into the focused app
+5. Press **Alt+Q** again to stop -- text is pasted into the focused app
 
 ## System Tray Menu
 
@@ -64,11 +64,11 @@ Right-click the tray icon for:
 
 ## Configuration
 
-Settings are saved to `%APPDATA%\Ekho\settings.json` and persist across sessions.
+Settings are saved to `%APPDATA%\Eqho\settings.json` and persist across sessions.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `hotkey` | `ctrl+shift+d` | Global hotkey combo |
+| `hotkey` | `alt+q` | Global hotkey combo |
 | `hotkey_mode` | `toggle` | `toggle` or `hold` |
 | `model_size` | `distil-large-v3` | Whisper model (see Model menu for full list) |
 | `language` | `en` | Two-letter language code |
@@ -95,7 +95,7 @@ The app auto-detects CUDA. If `cublas64_12.dll` is not found, it logs a warning 
 ## Structure
 
 ```
-Ekho/
+Eqho/
   SOUL.md              -- agent identity & standards
   AGENTS.md            -- workflow rules for this repo
   README.md            -- this file
@@ -104,13 +104,13 @@ Ekho/
   TODO.md              -- manual steps for Daniel
   requirements.txt     -- Python dependencies
   run.py               -- top-level launcher
-  Ekho.spec            -- PyInstaller config
+  Eqho.spec            -- PyInstaller config
   build.ps1            -- build script for standalone .exe
   src/
     __init__.py
     __main__.py         -- python -m src support
     main.py             -- entry point, wires all modules
-    settings.py         -- config persistence (%AppData%\Ekho)
+    settings.py         -- config persistence (%AppData%\Eqho)
     transcriber.py      -- faster-whisper wrapper with energy-based VAD
     audio.py            -- microphone device enumeration
     overlay.py          -- floating transcription preview (tkinter)
@@ -121,7 +121,7 @@ Ekho/
     icon_64.png         -- tray icon (full brightness)
     icon_64_active.png  -- tray icon (active/listening)
     icon_64_inactive.png -- tray icon (dimmed/idle)
-    ekho.ico            -- Windows .ico for packaged .exe
+    eqho.ico            -- Windows .ico for packaged .exe
   logo/
     echo_logo.svg       -- project logo (waveform, cyan-to-green gradient)
 ```
@@ -132,7 +132,7 @@ Ekho/
 powershell -ExecutionPolicy Bypass -File build.ps1
 ```
 
-The executable will be at `dist\Ekho.exe`. To start automatically with Windows, copy it to your Startup folder:
+The executable will be at `dist\Eqho.exe`. To start automatically with Windows, copy it to your Startup folder:
 
 ```
 %APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup

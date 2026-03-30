@@ -1,22 +1,30 @@
 # Changelog
 
-All notable changes to Ekho are tracked here.
+All notable changes to Eqho are tracked here.
 
 Date format: `YYYY-MM-DD`.
 
-## [0.1.5] - 2026-03-30
-
-### Fixed
-- Hold mode no longer cuts off the last word. Worker thread now drains the audio queue and flushes all remaining audio before the mic stream closes.
-- Hotkey mode switching (toggle ↔ hold) no longer crashes or breaks. Rewrote hold mode to use a single global `keyboard.hook()` instead of two `on_press_key`/`on_release_key` hooks that corrupted the keyboard library's internal state.
-- Toggle mode no longer double-fires (activate then immediately deactivate). Added 400ms debounce.
-- Settings changes (hotkey mode, paste mode) no longer trigger unnecessary model reloads — only model/language changes reload the model.
-
-### Added
-- Windows audio ducking fix: sets `UserDuckingPreference=3` in registry so Windows doesn't boost/duck other audio when Ekho uses the mic.
+## [0.2.0] - 2026-03-31
 
 ### Changed
-- Default hotkey changed from `Ctrl+Shift+Space` to **`Ctrl+Shift+D`** (D for Dictate). Space interfered with typing; Ctrl+Alt produced AltGr artifacts in Word.
+- **Renamed project from Ekho to Eqho.** Updated all code, docs, config paths, and build scripts.
+- Default hotkey changed to **`Alt+Q`** (Q for Eqho). Single left-hand combo, no conflicts.
+- Default mic set to Realtek Mic Array (device 3) to avoid Bluetooth HFP profile switching.
+- Default volume duck set to **Mute** while speaking.
+- Config paths: `%AppData%\Eqho`, `D:\EqhoModels`.
+
+### Added
+- **Microphone selector** in tray menu — pick which mic to use for dictation.
+- **Volume While Speaking** option in tray menu — Off, 50%, 25%, 10%, or Mute. Silently controls system volume via Windows Core Audio API (pycaw).
+- Emergency unmute on app exit via `atexit` — system audio is never left muted if Eqho crashes or is force-closed.
+- `pycaw` dependency for silent programmatic volume control.
+
+### Fixed
+- Hold mode no longer cuts off the last word. Worker thread drains audio queue and flushes before mic closes.
+- Hotkey mode switching (toggle ↔ hold) no longer crashes. Rewrote hold mode to use a single `keyboard.hook()` to avoid the library's internal hook corruption bug.
+- Toggle mode no longer double-fires. Added 400ms debounce.
+- Settings changes (hotkey mode, paste mode) skip unnecessary model reloads.
+- Volume control uses COM per-thread initialization to work from hotkey callback threads.
 
 ## [0.1.4] - 2026-03-30
 
@@ -42,7 +50,7 @@ Date format: `YYYY-MM-DD`.
 
 ### Fixed
 - CUDA inference now falls back to CPU gracefully when `cublas64_12.dll` is missing. A smoke test runs at model load time instead of failing at first transcription.
-- Removed Whisper's built-in `vad_filter` from transcribe calls -- it was too aggressive and discarding valid speech. Ekho's own energy-based VAD handles speech/silence detection.
+- Removed Whisper's built-in `vad_filter` from transcribe calls -- it was too aggressive and discarding valid speech. Eqho's own energy-based VAD handles speech/silence detection.
 - Lowered silence threshold from 0.01 to 0.003 RMS so quieter microphones are detected properly.
 - Overlay now updates on completed segments (previously only updated on partials, so short phrases showed "Listening..." forever).
 - Partial transcription now triggers every 1.5s of active speech (previously used a broken even-second-only check that rarely fired).
@@ -55,10 +63,10 @@ Date format: `YYYY-MM-DD`.
 ## [0.1.1] - 2026-03-30
 
 ### Changed
-- Renamed project from Echo to **Ekho**.
+- Renamed project from Echo to **Eqho**.
 - Updated all documentation to reflect faster-whisper (Whisper) as the transcription engine (replacing earlier Moonshine references).
 - Updated tray icon to use the project logo instead of programmatic fallback.
-- Updated config paths: `%AppData%\Ekho`, `D:/EkhoModels`.
+- Updated config paths: `%AppData%\Eqho`, `D:/EqhoModels`.
 
 ## [0.1.0] - 2026-03-29
 
@@ -69,9 +77,9 @@ Date format: `YYYY-MM-DD`.
 - Global hotkey support (`Ctrl+Shift+Space` default) with toggle and hold-to-talk modes.
 - Floating overlay bar at screen bottom showing live partial transcription.
 - Text injection into the active window via clipboard paste or simulated keystrokes.
-- Settings persistence to `%AppData%\Ekho\settings.json` across sessions.
+- Settings persistence to `%AppData%\Eqho\settings.json` across sessions.
 - Audio device enumeration via sounddevice.
 - Multi-language support: 13 languages.
 - Model selection: Tiny, Base, Small, Medium, Large v3.
-- PyInstaller packaging support (`Ekho.spec` + `build.ps1`) for standalone `.exe`.
+- PyInstaller packaging support (`Eqho.spec` + `build.ps1`) for standalone `.exe`.
 - Energy-based VAD for speech/silence detection with configurable thresholds.

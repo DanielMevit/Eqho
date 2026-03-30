@@ -6,10 +6,10 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Optional
 
-CONFIG_DIR = Path(os.environ.get("APPDATA", Path.home())) / "Ekho"
+CONFIG_DIR = Path(os.environ.get("APPDATA", Path.home())) / "Eqho"
 CONFIG_FILE = CONFIG_DIR / "settings.json"
 
-MODEL_CACHE_DIR = Path("D:/EkhoModels")
+MODEL_CACHE_DIR = Path("D:/EqhoModels")
 
 WHISPER_MODELS = {
     "distil-large-v3": "Distil Large v3 (~1.5 GB, English-optimized, recommended)",
@@ -41,18 +41,27 @@ SUPPORTED_LANGUAGES = {
 
 HOTKEY_MODES = ("toggle", "hold")
 
+VOLUME_DUCK_OPTIONS = {
+    "off": None,
+    "50%": 0.5,
+    "25%": 0.25,
+    "10%": 0.10,
+    "mute": 0.0,
+}
+
 
 @dataclass
 class Settings:
     language: str = "en"
-    hotkey: str = "ctrl+shift+d"
+    hotkey: str = "alt+q"
     hotkey_mode: str = "toggle"  # "toggle" or "hold"
     model_size: str = "distil-large-v3"
-    audio_device: Optional[int] = None  # None = system default
+    audio_device: Optional[int] = 3  # 3 = Realtek Mic Array (avoids Bluetooth HFP switch)
     auto_paste: bool = True  # paste via clipboard vs simulated keystrokes
     overlay_enabled: bool = True
     overlay_opacity: float = 0.85
     overlay_font_size: int = 14
+    volume_duck: str = "mute"  # "off", "50%", "25%", "10%", "mute"
     start_with_windows: bool = False
 
     # runtime-only (not persisted)

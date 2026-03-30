@@ -1,6 +1,6 @@
 # Roadmap
 
-Planned features and milestones for Ekho.
+Planned features and milestones for Eqho.
 
 ## Phase 1 -- Core Dictation (v0.1.x) [done]
 - [x] faster-whisper integration with energy-based VAD and streaming transcription
@@ -57,7 +57,7 @@ This is the final gate before going public. Internal .md files (SOUL, AGENTS, RO
 - [ ] Add LICENSE file (pick license -- MIT, Apache 2.0, etc.)
 - [ ] Add CONTRIBUTING.md if accepting community contributions
 - [ ] Optional: simple landing page (GitHub Pages or standalone)
-- [ ] Optional: demo GIF / video showing Ekho in action
+- [ ] Optional: demo GIF / video showing Eqho in action
 - [ ] Final QA pass -- test on a clean Windows install
 - [ ] Flip repo from private to public
 

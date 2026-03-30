@@ -1,4 +1,4 @@
-# Codex rules for this repo (Ekho)
+# Codex rules for this repo (Eqho)
 
 ## Reading ritual
 - At session start, read SOUL.md, then AGENTS.md, then README.md silently and obey them.
@@ -29,9 +29,9 @@
 - Transcription engine: faster-whisper (CTranslate2 backend, MIT license). Will migrate to whisper.cpp in Phase 4 for native distribution.
 - Default model: `distil-large-v3` (English-optimized, ~6x faster than large-v3). Multilingual models also available.
 - GPU: CUDA Toolkit 12.x required for GPU inference (NVIDIA). Auto-falls back to CPU if cuBLAS DLLs are missing.
-- Models cached to `D:\EkhoModels` (not in the repo). First run downloads from HuggingFace.
+- Models cached to `D:\EqhoModels` (not in the repo). First run downloads from HuggingFace.
 - Each responsibility lives in its own module inside `src/`:
-  - `settings.py` -- config persistence (`%AppData%\Ekho\settings.json`)
+  - `settings.py` -- config persistence (`%AppData%\Eqho\settings.json`)
   - `transcriber.py` -- faster-whisper wrapper with energy-based VAD, CUDA fallback to CPU
   - `audio.py` -- device enumeration (sounddevice)
   - `overlay.py` -- floating transcription preview (tkinter, bottom-center)
@@ -39,7 +39,7 @@
   - `injector.py` -- text injection into active app (pynput + pyperclip + ctypes Win32 for window focus restore)
   - `tray.py` -- system tray icon and menu (pystray + Pillow), loads logo-based PNGs from `assets/`
   - `main.py` -- wires everything together, manages activate/deactivate lifecycle
-- Settings persist in `%AppData%\Ekho\settings.json`.
+- Settings persist in `%AppData%\Eqho\settings.json`.
 
 ## Known quirks
 - Whisper's built-in `vad_filter` is too aggressive and discards valid speech. We use our own energy-based VAD instead (silence threshold 0.003 RMS, 1.2s silence timeout).
@@ -55,7 +55,7 @@
 - The current Python stack is for development velocity; whisper.cpp is for shipping.
 
 ## Versioning
-- Current version line: **v0.1.5** -- patch numbers increment freely.
+- Current version line: **v0.2.0** -- Phase 2 in progress.
 - Tag releases as `vMAJOR.MINOR.PATCH` when publishing milestones.
 
 ## Public release strategy

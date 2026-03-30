@@ -1,4 +1,4 @@
-"""System tray icon with menu for Ekho."""
+"""System tray icon with menu for Eqho."""
 
 import logging
 import sys
@@ -8,7 +8,8 @@ from typing import Callable, Optional
 from PIL import Image, ImageDraw
 import pystray
 
-from .settings import Settings, SUPPORTED_LANGUAGES, WHISPER_MODELS
+from .settings import Settings, SUPPORTED_LANGUAGES, WHISPER_MODELS, VOLUME_DUCK_OPTIONS
+from .audio import list_input_devices
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +31,7 @@ def _load_icon(active: bool = False) -> Image.Image:
 
 
 def _create_icon_fallback(active: bool = False) -> Image.Image:
-    """Programmatic fallback using Ekho's gradient palette."""
+    """Programmatic fallback using Eqho's gradient palette."""
     size = 64
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
@@ -78,9 +79,9 @@ class TrayApp:
 
     def run(self) -> None:
         self._icon = pystray.Icon(
-            "Ekho",
+            "Eqho",
             icon=_load_icon(False),
-            title="Ekho",
+            title="Eqho",
             menu=self._build_menu(),
         )
         self._icon.run()
@@ -89,13 +90,13 @@ class TrayApp:
         self._is_active = active
         if self._icon:
             self._icon.icon = _load_icon(active)
-            title = "Ekho - Listening..." if active else "Ekho"
+            title = "Eqho - Listening..." if active else "Eqho"
             self._icon.title = title
 
     def notify(self, message: str) -> None:
         if self._icon:
             try:
-                self._icon.notify(message, "Ekho")
+                self._icon.notify(message, "Eqho")
             except Exception:
                 pass
 
@@ -107,6 +108,7 @@ class TrayApp:
                 default=True,
             ),
             pystray.Menu.SEPARATOR,
+            pystray.MenuItem("Microphone", self._mic_submenu()),
             pystray.MenuItem("Model", self._model_submenu()),
             pystray.MenuItem("Hotkey Mode", pystray.Menu(
                 pystray.MenuItem(
@@ -137,11 +139,36 @@ class TrayApp:
                 ),
             )),
             pystray.MenuItem("Language", self._language_submenu()),
+            pystray.MenuItem("Volume While Speaking", self._volume_duck_submenu()),
             pystray.MenuItem("Show Overlay", self._toggle_overlay,
                              checked=lambda _: self._settings.overlay_enabled),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("Quit", self._quit_click),
         )
+
+    def _mic_submenu(self) -> pystray.Menu:
+        items = [pystray.MenuItem(
+            "System Default",
+            self._make_mic_setter(None),
+            checked=lambda _, k=None: self._settings.audio_device is k,
+            radio=True,
+        )]
+        for idx, name in list_input_devices():
+            # Skip Bluetooth headset mics to avoid HFP switching
+            items.append(pystray.MenuItem(
+                name,
+                self._make_mic_setter(idx),
+                checked=lambda _, k=idx: self._settings.audio_device == k,
+                radio=True,
+            ))
+        return pystray.Menu(*items)
+
+    def _make_mic_setter(self, idx):
+        def _set(icon, item):
+            self._settings.audio_device = idx
+            self._settings.save()
+            self._on_settings_changed(reload_model=True)
+        return _set
 
     def _model_submenu(self) -> pystray.Menu:
         items = []
@@ -178,6 +205,24 @@ class TrayApp:
             self._settings.language = code
             self._settings.save()
             self._on_settings_changed(reload_model=True)
+        return _set
+
+    def _volume_duck_submenu(self) -> pystray.Menu:
+        labels = {"off": "Off (no change)", "50%": "50%", "25%": "25%", "10%": "10%", "mute": "Mute"}
+        items = []
+        for key in VOLUME_DUCK_OPTIONS:
+            items.append(pystray.MenuItem(
+                labels[key],
+                self._make_volume_duck_setter(key),
+                checked=lambda _, k=key: self._settings.volume_duck == k,
+                radio=True,
+            ))
+        return pystray.Menu(*items)
+
+    def _make_volume_duck_setter(self, key: str):
+        def _set(icon, item):
+            self._settings.volume_duck = key
+            self._settings.save()
         return _set
 
     def _toggle_click(self, icon, item) -> None:
