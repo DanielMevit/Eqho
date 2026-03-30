@@ -4,15 +4,27 @@ All notable changes to Ekho are tracked here.
 
 Date format: `YYYY-MM-DD`.
 
+## [0.1.5] - 2026-03-30
+
+### Fixed
+- Hold mode no longer cuts off the last word. Worker thread now drains the audio queue and flushes all remaining audio before the mic stream closes.
+- Hotkey mode switching (toggle ↔ hold) no longer crashes or breaks. Rewrote hold mode to use a single global `keyboard.hook()` instead of two `on_press_key`/`on_release_key` hooks that corrupted the keyboard library's internal state.
+- Toggle mode no longer double-fires (activate then immediately deactivate). Added 400ms debounce.
+- Settings changes (hotkey mode, paste mode) no longer trigger unnecessary model reloads — only model/language changes reload the model.
+
+### Added
+- Windows audio ducking fix: sets `UserDuckingPreference=3` in registry so Windows doesn't boost/duck other audio when Ekho uses the mic.
+
+### Changed
+- Default hotkey changed from `Ctrl+Shift+Space` to **`Ctrl+Shift+D`** (D for Dictate). Space interfered with typing; Ctrl+Alt produced AltGr artifacts in Word.
+
 ## [0.1.4] - 2026-03-30
 
 ### Fixed
-- Hotkey mode switching (toggle ↔ hold) no longer crashes the app. Replaced `keyboard.unhook_all()` with targeted hook removal.
 - Text injection now pastes into the correct window (e.g. Word, browser) instead of the PowerShell terminal. Captures the foreground window handle on activation and restores focus before pasting.
 - Modifier key release before paste — explicitly releases all modifier keys before simulating Ctrl+V to prevent ghost key conflicts.
 
 ### Changed
-- Default hotkey changed from `Ctrl+Shift+Space` to **`Ctrl+Alt+D`** (D for Dictate). Space in the combo was interfering with normal typing.
 - Increased post-dictation delay (0.15s → 0.4s) to allow modifier keys to fully release before paste injection.
 
 ## [0.1.3] - 2026-03-30

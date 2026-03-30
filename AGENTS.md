@@ -55,7 +55,7 @@
 - The current Python stack is for development velocity; whisper.cpp is for shipping.
 
 ## Versioning
-- Current version line: **v0.1.4** -- patch numbers increment freely.
+- Current version line: **v0.1.5** -- patch numbers increment freely.
 - Tag releases as `vMAJOR.MINOR.PATCH` when publishing milestones.
 
 ## Public release strategy

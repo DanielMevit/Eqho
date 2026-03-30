@@ -9,7 +9,7 @@ An always-on dictation app that runs in your system tray. Press a hotkey, speak,
 - **Real-time transcription** -- see words appear as you speak via a floating overlay
 - **100% local** -- no cloud, no API keys, everything runs on your machine
 - **System tray** -- runs silently in the background
-- **Global hotkey** -- works in any application (default: `Ctrl+Alt+D`)
+- **Global hotkey** -- works in any application (default: `Ctrl+Shift+D`)
 - **Toggle or hold-to-talk** modes
 - **Auto-paste** into the active window via clipboard or simulated keystrokes
 - **Multi-language** -- English, Spanish, Mandarin, Japanese, Korean, Vietnamese, Arabic, Ukrainian, French, German, Portuguese, Russian, Italian
@@ -41,15 +41,15 @@ python run.py
 The app will:
 1. Appear as an icon in your system tray (bottom-right, may be behind the `^` arrow)
 2. Pre-load the Distil-Large-v3 model in the background (~1.5 GB, cached in `D:\EkhoModels` after first download)
-3. Wait for you to press **Ctrl+Alt+D**
+3. Wait for you to press **Ctrl+Shift+D**
 
 ### How to dictate
 
 1. Click into the app where you want text (Word, browser, Notepad, etc.)
-2. Press **Ctrl+Alt+D** -- a floating bar appears saying "Listening..."
+2. Press **Ctrl+Shift+D** -- a floating bar appears saying "Listening..."
 3. Speak naturally, pause ~1-2 seconds between phrases
 4. The overlay updates with your transcribed words
-5. Press **Ctrl+Alt+D** again to stop -- text is pasted into the focused app
+5. Press **Ctrl+Shift+D** again to stop -- text is pasted into the focused app
 
 ## System Tray Menu
 
@@ -68,7 +68,7 @@ Settings are saved to `%APPDATA%\Ekho\settings.json` and persist across sessions
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `hotkey` | `ctrl+alt+d` | Global hotkey combo |
+| `hotkey` | `ctrl+shift+d` | Global hotkey combo |
 | `hotkey_mode` | `toggle` | `toggle` or `hold` |
 | `model_size` | `distil-large-v3` | Whisper model (see Model menu for full list) |
 | `language` | `en` | Two-letter language code |

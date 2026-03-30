@@ -67,7 +67,7 @@ class TrayApp:
         settings: Settings,
         on_toggle: Callable[[], None],
         on_quit: Callable[[], None],
-        on_settings_changed: Callable[[], None],
+        on_settings_changed: Callable,
     ):
         self._settings = settings
         self._on_toggle = on_toggle
@@ -159,7 +159,7 @@ class TrayApp:
             if self._settings.model_size != key:
                 self._settings.model_size = key
                 self._settings.save()
-                self._on_settings_changed()
+                self._on_settings_changed(reload_model=True)
         return _set
 
     def _language_submenu(self) -> pystray.Menu:
@@ -177,7 +177,7 @@ class TrayApp:
         def _set(icon, item):
             self._settings.language = code
             self._settings.save()
-            self._on_settings_changed()
+            self._on_settings_changed(reload_model=True)
         return _set
 
     def _toggle_click(self, icon, item) -> None:

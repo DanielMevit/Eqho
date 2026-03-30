@@ -2,6 +2,7 @@
 
 import logging
 import threading
+import time
 from typing import Callable, Optional
 
 import keyboard
@@ -26,8 +27,9 @@ class HotkeyManager:
         self._active = False
         self._registered = False
         self._lock = threading.Lock()
-        self._key_hooks: list = []  # from on_press_key / on_release_key
+        self._hold_hook = None  # single hook for hold mode (handles both press/release)
         self._hotkey_handler = None  # from add_hotkey
+        self._last_toggle_time: float = 0
 
     def register(self) -> None:
         if self._registered:
@@ -37,16 +39,21 @@ class HotkeyManager:
         mode = self._settings.hotkey_mode
 
         if mode == "hold":
-            self._key_hooks.append(keyboard.on_press_key(
-                self._last_key(combo),
-                self._on_hold_press,
-                suppress=False,
-            ))
-            self._key_hooks.append(keyboard.on_release_key(
-                self._last_key(combo),
-                self._on_hold_release,
-                suppress=False,
-            ))
+            # Use a single global hook that filters for our key + modifiers.
+            # This avoids the keyboard library's hook_key bug where two
+            # hooks on the same key name corrupt internal _hooks state.
+            target_key = self._last_key(combo)
+            target_scans = set(keyboard.key_to_scan_codes(target_key))
+
+            def _hold_handler(event):
+                if event.scan_code not in target_scans:
+                    return
+                if event.event_type == keyboard.KEY_DOWN:
+                    self._on_hold_press(event)
+                elif event.event_type == keyboard.KEY_UP:
+                    self._on_hold_release(event)
+
+            self._hold_hook = keyboard.hook(_hold_handler, suppress=False)
         else:
             self._hotkey_handler = keyboard.add_hotkey(combo, self._on_toggle, suppress=False)
 
@@ -54,20 +61,23 @@ class HotkeyManager:
         log.info("Hotkey registered: %s (%s mode)", combo, mode)
 
     def unregister(self) -> None:
-        for hook in self._key_hooks:
+        if self._hold_hook is not None:
             try:
-                keyboard.unhook(hook)
-            except (ValueError, KeyError):
-                pass
-        self._key_hooks.clear()
+                keyboard.unhook(self._hold_hook)
+            except Exception as e:
+                log.debug("Failed to unhook hold hook: %s", e)
+            self._hold_hook = None
+
         if self._hotkey_handler is not None:
             try:
                 keyboard.remove_hotkey(self._hotkey_handler)
-            except (ValueError, KeyError):
-                pass
+            except Exception as e:
+                log.debug("Failed to remove hotkey: %s", e)
             self._hotkey_handler = None
+
         self._registered = False
         self._active = False
+        log.info("Hotkey unregistered.")
 
     def _last_key(self, combo: str) -> str:
         return combo.split("+")[-1].strip()
@@ -84,7 +94,11 @@ class HotkeyManager:
     # -- Toggle mode ----------------------------------------------------------
 
     def _on_toggle(self) -> None:
+        now = time.monotonic()
         with self._lock:
+            if now - self._last_toggle_time < 0.4:
+                return  # debounce rapid double-fires
+            self._last_toggle_time = now
             if self._active:
                 self._active = False
                 self._on_deactivate()

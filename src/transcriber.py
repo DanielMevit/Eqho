@@ -17,6 +17,30 @@ log = logging.getLogger(__name__)
 
 os.environ["HF_HUB_CACHE"] = str(MODEL_CACHE_DIR / "huggingface")
 
+
+def _disable_windows_audio_ducking() -> None:
+    """Tell Windows not to adjust other apps' volume when we use the mic.
+
+    Sets the registry key so Windows Communications Activity is "Do nothing"
+    instead of ducking/boosting other audio when a mic is in use.
+    """
+    try:
+        import winreg
+        key_path = r"SOFTWARE\Microsoft\Multimedia\Audio"
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0,
+                            winreg.KEY_READ | winreg.KEY_WRITE) as key:
+            try:
+                current, _ = winreg.QueryValueEx(key, "UserDuckingPreference")
+                if current == 3:  # already set to "Do nothing"
+                    return
+            except FileNotFoundError:
+                pass
+            # 3 = "Do nothing" (0=mute, 1=reduce 80%, 2=reduce 50%)
+            winreg.SetValueEx(key, "UserDuckingPreference", 0, winreg.REG_DWORD, 3)
+            log.info("Disabled Windows audio ducking (Communications Activity → Do nothing).")
+    except Exception as e:
+        log.debug("Could not disable audio ducking: %s", e)
+
 SAMPLE_RATE = 16000
 CHUNK_DURATION = 0.5
 SILENCE_THRESHOLD = 0.003
@@ -48,6 +72,7 @@ class VoiceTranscriber:
     def __init__(self, settings: Settings):
         self._settings = settings
         self._model: Optional[WhisperModel] = None
+        _disable_windows_audio_ducking()
         self._on_partial: Optional[Callable[[str], None]] = None
         self._on_complete: Optional[Callable[[str], None]] = None
         self._running = False
@@ -193,9 +218,19 @@ class VoiceTranscriber:
                         is_speaking = False
                         silence_start = None
 
-        # Flush remaining audio on stop
-        if len(audio_buffer) / SAMPLE_RATE >= MIN_PHRASE_DURATION and is_speaking:
-            log.info("Flushing remaining %.1fs of audio on stop", len(audio_buffer) / SAMPLE_RATE)
+        # Drain any remaining chunks from the queue
+        while not self._audio_q.empty():
+            try:
+                chunk = self._audio_q.get_nowait()
+                audio_buffer = np.concatenate([audio_buffer, chunk])
+            except queue.Empty:
+                break
+
+        # Flush all remaining audio on stop (don't require is_speaking —
+        # the user releasing the hold key IS the stop signal)
+        buf_duration = len(audio_buffer) / SAMPLE_RATE
+        if buf_duration >= MIN_PHRASE_DURATION:
+            log.info("Flushing remaining %.1fs of audio on stop", buf_duration)
             self._do_complete(audio_buffer)
 
     def _do_partial(self, audio: np.ndarray) -> None:
@@ -232,6 +267,12 @@ class VoiceTranscriber:
                 return
             self._running = False
 
+        # Wait for worker to finish (it drains the queue and flushes audio)
+        if self._worker:
+            self._worker.join(timeout=5)
+            self._worker = None
+
+        # Close mic AFTER worker is done so no audio chunks are lost
         if self._stream:
             try:
                 self._stream.stop()
@@ -239,10 +280,6 @@ class VoiceTranscriber:
             except Exception:
                 pass
             self._stream = None
-
-        if self._worker:
-            self._worker.join(timeout=5)
-            self._worker = None
 
         log.info("Transcription stopped.")
 

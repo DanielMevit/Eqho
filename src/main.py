@@ -101,11 +101,12 @@ class App:
 
     # -- Settings change -------------------------------------------------------
 
-    def _on_settings_changed(self) -> None:
-        log.info("Settings changed, re-registering hotkey and reloading model")
+    def _on_settings_changed(self, reload_model: bool = False) -> None:
+        log.info("Settings changed, re-registering hotkey%s", " and reloading model" if reload_model else "")
         self.hotkey.unregister()
         self.hotkey.register()
-        self.transcriber.reload_model()
+        if reload_model:
+            self.transcriber.reload_model()
 
     # -- Lifecycle -------------------------------------------------------------
 

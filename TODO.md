@@ -9,7 +9,7 @@ Things Daniel needs to do that can't be automated by the agent.
 - [x] Install CUDA Toolkit 12.9: `winget install Nvidia.CUDA --version 12.9`
 - [x] Run: `python run.py` -- first run downloads the Whisper model (~1.5 GB for medium).
 - [ ] Grant microphone permissions if Windows prompts.
-- [x] Verify dictation works: Ctrl+Alt+D, speak, pause, Ctrl+Alt+D, text appears in focused app.
+- [x] Verify dictation works: Ctrl+Shift+D, speak, pause, Ctrl+Shift+D, text appears in focused app.
 
 ## Git Setup
 - [ ] `git init` in `D:\Vibe Coding\Ekho`
