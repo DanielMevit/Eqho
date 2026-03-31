@@ -16,6 +16,8 @@ from .settings import Settings, MODEL_CACHE_DIR
 log = logging.getLogger(__name__)
 
 os.environ["HF_HUB_CACHE"] = str(MODEL_CACHE_DIR / "huggingface")
+os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
+os.environ.setdefault("HF_HUB_DISABLE_IMPLICIT_TOKEN", "1")
 
 
 def _disable_windows_audio_ducking() -> None:

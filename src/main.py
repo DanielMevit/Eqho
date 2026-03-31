@@ -6,6 +6,7 @@ Wires together: settings, transcriber, overlay, hotkey, tray, and injector.
 import logging
 import threading
 import time
+import warnings
 from typing import Optional
 
 from .fonts import load_fonts, unload_fonts
@@ -40,8 +41,13 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 # Silence noisy libraries
-for _quiet in ("PIL", "httpx", "httpcore", "urllib3", "huggingface_hub"):
+for _quiet in ("PIL", "httpx", "httpcore", "urllib3"):
     logging.getLogger(_quiet).setLevel(logging.WARNING)
+# huggingface_hub emits a WARNING about missing HF_TOKEN on every download —
+# harmless (downloads work fine without auth) but confusing to users
+logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+warnings.filterwarnings("ignore", message=".*HF_TOKEN.*")
+warnings.filterwarnings("ignore", message=".*unauthenticated.*")
 log = logging.getLogger("eqho")
 
 
