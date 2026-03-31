@@ -11,6 +11,7 @@ from typing import Callable, Optional
 
 import keyboard
 
+from .fonts import FONT_FAMILY
 from .settings import Settings
 
 log = logging.getLogger(__name__)
@@ -25,10 +26,10 @@ _ACCENT = "#00d4aa"
 _ACCENT_HOVER = "#00f0c0"
 _DANGER = "#ff4466"
 _BORDER = "#2a2a45"
-_FONT = ("Segoe UI", 11)
-_FONT_TITLE = ("Segoe UI Semibold", 14)
-_FONT_LABEL = ("Segoe UI", 10)
-_FONT_HOTKEY = ("Segoe UI Semibold", 16)
+_FONT = (FONT_FAMILY, 11)
+_FONT_TITLE = (FONT_FAMILY, 14, "bold")
+_FONT_LABEL = (FONT_FAMILY, 10)
+_FONT_HOTKEY = (FONT_FAMILY, 16, "bold")
 
 
 class SettingsWindow:

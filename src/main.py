@@ -8,6 +8,7 @@ import threading
 import time
 from typing import Optional
 
+from .fonts import load_fonts, unload_fonts
 from .settings import Settings, VOLUME_DUCK_OPTIONS
 from .transcriber import VoiceTranscriber
 from .overlay import TranscriptionOverlay
@@ -182,6 +183,7 @@ class App:
     # -- Lifecycle -------------------------------------------------------------
 
     def run(self) -> None:
+        load_fonts()
         log.info("Eqho starting...")
         log.info(
             "Model: %s | Hotkey: %s (%s mode)",
@@ -238,6 +240,7 @@ class App:
         self.transcriber.shutdown()
         self.overlay.shutdown()
         self.settings.save()
+        unload_fonts()
 
 
 def _emergency_unmute() -> None:

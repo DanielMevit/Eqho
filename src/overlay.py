@@ -5,6 +5,7 @@ import threading
 import tkinter as tk
 from typing import Optional
 
+from .fonts import FONT_FAMILY
 from .settings import Settings
 
 log = logging.getLogger(__name__)
@@ -63,7 +64,7 @@ class TranscriptionOverlay:
         self._label = tk.Label(
             frame,
             text="Listening...",
-            font=("Segoe UI", self._settings.overlay_font_size),
+            font=(FONT_FAMILY, self._settings.overlay_font_size),
             fg=_FG_COLOR,
             bg=_BG_COLOR,
             anchor="w",
