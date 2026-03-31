@@ -22,3 +22,4 @@ Thumbs.db
 
 # App data (not secrets, but local)
 *.log
+settings.json

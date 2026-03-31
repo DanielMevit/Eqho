@@ -4,7 +4,7 @@ import time
 import winreg
 
 print("=" * 60)
-print("EKHO AUDIO DIAGNOSTIC")
+print("EQHO AUDIO DIAGNOSTIC")
 print("=" * 60)
 
 # 1. Check Windows Communications ducking setting

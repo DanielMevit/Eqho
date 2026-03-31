@@ -1,4 +1,4 @@
-"""Top-level launcher script for Eqho."""
+"""Top-level launcher script for Eqho v0.2.1."""
 
 from src.main import main
 

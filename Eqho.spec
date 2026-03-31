@@ -40,4 +40,5 @@ exe = EXE(
     console=False,
     icon="assets/eqho.ico",
     uac_admin=False,
+    version_info=None,
 )

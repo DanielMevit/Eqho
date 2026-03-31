@@ -1,4 +1,4 @@
-# Build Eqho into a standalone .exe
+# Build Eqho v0.2.1 into a standalone .exe
 # Run from the Eqho directory:
 #   powershell -ExecutionPolicy Bypass -File build.ps1
 

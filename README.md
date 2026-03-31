@@ -132,7 +132,7 @@ Eqho/
     icon_64_inactive.png -- tray icon (dimmed/idle)
     eqho.ico            -- Windows .ico for packaged .exe
   logo/
-    echo_logo.svg       -- project logo (waveform, cyan-to-green gradient)
+    eqho_logo.svg       -- project logo (waveform, cyan-to-green gradient)
 ```
 
 ## Building a Standalone .exe

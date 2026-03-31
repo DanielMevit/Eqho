@@ -1,4 +1,4 @@
-"""Quick test of pycaw volume control."""
+"""Quick test of pycaw volume control for Eqho."""
 from pycaw.pycaw import AudioUtilities
 
 speakers = AudioUtilities.GetSpeakers()
