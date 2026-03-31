@@ -49,6 +49,15 @@ VOLUME_DUCK_OPTIONS = {
     "mute": 0.0,
 }
 
+OVERLAY_POSITIONS = [
+    "bottom-center",
+    "top-center",
+    "top-left",
+    "top-right",
+    "bottom-left",
+    "bottom-right",
+]
+
 
 @dataclass
 class Settings:
@@ -61,6 +70,7 @@ class Settings:
     overlay_enabled: bool = True
     overlay_opacity: float = 0.85
     overlay_font_size: int = 14
+    overlay_position: str = "bottom-center"
     volume_duck: str = "mute"  # "off", "50%", "25%", "10%", "mute"
     start_with_windows: bool = False
 
