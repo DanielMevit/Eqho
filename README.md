@@ -57,7 +57,7 @@ Right-click the tray icon for:
 - **Start/Stop Listening** -- toggle dictation (same as hotkey)
 - **Microphone** -- pick which mic to use
 - **Model** -- switch between Distil (English), Turbo, Medium, Small, Base, Tiny, Large v3
-- **Change Hotkey...** -- open the settings window to capture a new hotkey combo
+- **Dashboard...** -- open the full settings dashboard
 - **Hotkey Mode** -- switch between toggle and hold-to-talk
 - **Paste Mode** -- clipboard paste (fast) or simulated typing
 - **Language** -- switch transcription language
@@ -84,6 +84,7 @@ Settings are saved to `%APPDATA%\Eqho\settings.json` and persist across sessions
 | `overlay_position` | `bottom-center` | Overlay screen position |
 | `volume_duck` | `mute` | Volume during dictation: off, 50%, 25%, 10%, mute |
 | `start_with_windows` | `false` | Auto-start on Windows login |
+| `theme` | `dark` | Color theme: dark, light, system |
 
 ## Models
 
@@ -125,12 +126,18 @@ Eqho/
     hotkey.py           -- global hotkey listener
     injector.py         -- text injection into active app (with window focus restore)
     tray.py             -- system tray icon & menu
-    settings_ui.py      -- hotkey customization window (dark theme)
+    settings_ui.py      -- legacy hotkey capture window
+    dashboard.py        -- settings dashboard (customtkinter)
+    theme.py            -- design tokens, color palettes, theme system
+    fonts.py            -- Inter font loader (Windows AddFontResourceEx)
   assets/
     icon_64.png         -- tray icon (full brightness)
     icon_64_active.png  -- tray icon (active/listening)
     icon_64_inactive.png -- tray icon (dimmed/idle)
     eqho.ico            -- Windows .ico for packaged .exe
+    fonts/
+      Inter-*.otf       -- Inter font family (Regular, Medium, SemiBold, Bold)
+      LICENSE-Inter.txt  -- SIL Open Font License
   logo/
     eqho_logo.svg       -- project logo (waveform, cyan-to-green gradient)
 ```
@@ -156,6 +163,7 @@ The executable will be at `dist\Eqho.exe`. To start automatically with Windows, 
 - keyboard (global hotkeys)
 - pynput + pyperclip (text injection)
 - tkinter (overlay)
+- customtkinter (dashboard UI)
 - sounddevice + numpy (audio capture and processing)
 - Target: Windows 10/11
 

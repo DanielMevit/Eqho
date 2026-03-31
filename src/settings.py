@@ -73,6 +73,7 @@ class Settings:
     overlay_position: str = "bottom-center"
     volume_duck: str = "mute"  # "off", "50%", "25%", "10%", "mute"
     start_with_windows: bool = False
+    theme: str = "dark"  # "dark", "light", "system"
 
     # runtime-only (not persisted)
     _listeners: list = field(default_factory=list, repr=False)

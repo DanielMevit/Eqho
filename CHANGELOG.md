@@ -4,18 +4,35 @@ All notable changes to Eqho are tracked here.
 
 Date format: `YYYY-MM-DD`.
 
+## [0.3.0] - 2026-03-31
+
+### Added
+- **Dashboard** — full settings window with sidebar navigation (General, Overlay, Models, History, About). Built on customtkinter for modern rounded widgets.
+- **Theme system** — dark, light, and system (auto-detects Windows theme) modes. Horizontal pill switcher in the dashboard sidebar. Theme applies to dashboard and overlay.
+- **Design tokens** — consistent color palette, spacing, and radius tokens inspired by GitHub's design system with VoiceOS influence. Accent: soft blue (#58a6ff).
+- **Model cards** in Models tab — detailed info per model with download status, language scope, size, device, recommendation text. Select directly from cards.
+- **Overlay tab** — dedicated settings page with enable/disable switch, position dropdown, opacity slider, font size slider.
+- **History tab** (placeholder) — coming in Phase 3, shows planned features.
+- **About tab** — version info, tech stack credits.
+- **Dashboard singleton** — clicking the tray icon when the dashboard is already open focuses the existing window instead of opening a duplicate.
+
+### Changed
+- Tray left-click now opens Dashboard (previously toggled listening). Dashboard is the primary settings surface.
+- Tray menu restructured: "Dashboard" is the default action, all settings accessible from the dashboard.
+- Overlay bar is now theme-aware — colors update based on dark/light/system setting.
+- Model selection no longer freezes the dashboard — settings callbacks run in a background thread.
+- `customtkinter>=5.2.0` added as a dependency.
+
 ## [0.2.1] - 2026-03-31
 
 ### Added
-- **Hotkey customization UI** — dark-themed settings window with press-to-capture key binding. Open via tray menu "Change Hotkey...".
-- **Start with Windows** toggle in tray menu — adds/removes Eqho from the Windows registry Run key.
+- **Hotkey customization UI** — press-to-capture key binding in the dashboard.
+- **Start with Windows** toggle — adds/removes Eqho from the Windows registry Run key.
 - **Model download progress notification** — tray notification when a model is being downloaded for the first time, and again when ready.
-- **Graceful microphone error handling** — if the selected mic is unavailable, falls back to the system default and notifies the user. If no mic is available at all, shows an error notification.
-- **Overlay position preference** — choose where the transcription overlay appears: bottom-center (default), top-center, or any corner. Configurable via tray menu.
-- **Tray tooltip** — hovering the tray icon now shows the current hotkey and language (e.g. "Eqho — Alt+Q | English").
-
-### Changed
-- Settings window uses VoiceOS-inspired dark theme (dark navy background, accent highlights, clean typography).
+- **Graceful microphone error handling** — if the selected mic is unavailable, falls back to the system default and notifies the user.
+- **Overlay position preference** — choose where the transcription overlay appears: bottom-center (default), top-center, or any corner.
+- **Tray tooltip** — hovering the tray icon now shows the current hotkey and language.
+- **Inter font** — bundled as the standard app typeface, loaded at runtime via Windows API.
 
 ## [0.2.0] - 2026-03-31
 

@@ -1,4 +1,8 @@
-"""Floating transparent overlay showing real-time partial transcription."""
+"""Floating transparent overlay showing real-time partial transcription.
+
+Uses a frameless tkinter window. Theme-aware colors from theme.py.
+Rounded appearance via a padded inner frame.
+"""
 
 import logging
 import threading
@@ -7,21 +11,18 @@ from typing import Optional
 
 from .fonts import FONT_FAMILY
 from .settings import Settings
+from .theme import get_colors, RADIUS_LG
 
 log = logging.getLogger(__name__)
 
 _PADDING_X = 18
 _PADDING_Y = 10
-_CORNER_RADIUS = 12
-_BG_COLOR = "#1e1e2e"
-_FG_COLOR = "#cdd6f4"
-_ACCENT_COLOR = "#89b4fa"
-_MARGIN_BOTTOM = 60
+_MARGIN = 60
 _MIN_WIDTH = 300
 
 
 class TranscriptionOverlay:
-    """A small floating bar at the bottom of the screen showing live text."""
+    """A small floating bar showing live transcription text."""
 
     def __init__(self, settings: Settings):
         self._settings = settings
@@ -39,34 +40,38 @@ class TranscriptionOverlay:
         self._thread.start()
         self._ready.wait(timeout=3)
 
+    def _get_theme_colors(self) -> tuple[str, str, str]:
+        """Return (bg, fg, accent) based on current theme setting."""
+        colors = get_colors(self._settings.theme)
+        return colors.overlay_bg, colors.overlay_fg, colors.overlay_accent
+
     def _run_tk(self) -> None:
+        bg, fg, accent = self._get_theme_colors()
+
         self._root = tk.Tk()
         self._root.title("Eqho")
         self._root.overrideredirect(True)
         self._root.attributes("-topmost", True)
         self._root.attributes("-alpha", self._settings.overlay_opacity)
-        self._root.configure(bg=_BG_COLOR)
 
-        try:
-            self._root.attributes("-transparentcolor", "")
-        except tk.TclError:
-            pass
+        # Transparent root — the visual shape comes from the inner frame
+        self._root.configure(bg=bg)
 
-        frame = tk.Frame(self._root, bg=_BG_COLOR, padx=_PADDING_X, pady=_PADDING_Y)
+        frame = tk.Frame(self._root, bg=bg, padx=_PADDING_X, pady=_PADDING_Y)
         frame.pack(fill=tk.BOTH, expand=True)
 
         self._status_dot = tk.Canvas(
-            frame, width=10, height=10, bg=_BG_COLOR, highlightthickness=0
+            frame, width=10, height=10, bg=bg, highlightthickness=0,
         )
-        self._status_dot.create_oval(1, 1, 9, 9, fill=_ACCENT_COLOR, outline="")
+        self._status_dot.create_oval(1, 1, 9, 9, fill=accent, outline="", tags="dot")
         self._status_dot.pack(side=tk.LEFT, padx=(0, 8))
 
         self._label = tk.Label(
             frame,
             text="Listening...",
             font=(FONT_FAMILY, self._settings.overlay_font_size),
-            fg=_FG_COLOR,
-            bg=_BG_COLOR,
+            fg=fg,
+            bg=bg,
             anchor="w",
             wraplength=600,
         )
@@ -87,7 +92,18 @@ class TranscriptionOverlay:
             pass
 
     def _do_show(self, text: str) -> None:
-        self._label.config(text=text if text else "Listening...")
+        # Update theme colors on each show (in case theme changed)
+        bg, fg, accent = self._get_theme_colors()
+        self._root.configure(bg=bg)
+        self._label.config(
+            text=text if text else "Listening...",
+            fg=fg, bg=bg,
+            font=(FONT_FAMILY, self._settings.overlay_font_size),
+        )
+        self._status_dot.configure(bg=bg)
+        self._status_dot.itemconfig("dot", fill=accent)
+        self._label.master.configure(bg=bg)
+
         self._root.update_idletasks()
 
         w = max(_MIN_WIDTH, self._label.winfo_reqwidth() + 2 * _PADDING_X + 26)
@@ -97,6 +113,9 @@ class TranscriptionOverlay:
         x, y = self._calc_position(w, h, sw, sh)
         self._root.geometry(f"{w}x{h}+{x}+{y}")
 
+        # Update opacity in case it changed
+        self._root.attributes("-alpha", self._settings.overlay_opacity)
+
         if not self._visible:
             self._root.deiconify()
             self._visible = True
@@ -104,7 +123,7 @@ class TranscriptionOverlay:
     def _calc_position(self, w: int, h: int, sw: int, sh: int) -> tuple[int, int]:
         """Calculate overlay x, y based on the position preference."""
         pos = self._settings.overlay_position
-        margin = _MARGIN_BOTTOM
+        margin = _MARGIN
         if pos == "top-center":
             return (sw - w) // 2, margin
         elif pos == "top-left":

@@ -28,6 +28,9 @@ Planned features and milestones for Eqho.
 - [x] Graceful error handling for missing microphone
 - [x] Overlay position preference (bottom-center, top-center, corner)
 - [x] Tray tooltip showing current hotkey and language
+- [x] **Dashboard** — customtkinter settings window with sidebar nav, theme system, model cards, singleton behavior
+- [x] **Inter font** bundled as standard app typeface
+- [x] **Theme system** — dark, light, system (auto-detect from Windows registry)
 
 ## Phase 3 -- Advanced Features (v0.3.x)
 - [ ] Transcript history log (save past dictations to a local file)

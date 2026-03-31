@@ -11,7 +11,7 @@ import pystray
 
 from .settings import Settings, SUPPORTED_LANGUAGES, WHISPER_MODELS, VOLUME_DUCK_OPTIONS, OVERLAY_POSITIONS
 from .audio import list_input_devices
-from .settings_ui import SettingsWindow
+from .dashboard import open_dashboard
 
 log = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ class TrayApp:
         self._on_settings_changed = on_settings_changed
         self._icon: Optional[pystray.Icon] = None
         self._is_active = False
-        self._settings_window: Optional[SettingsWindow] = None
+        self._dashboard_open = False
 
     def _tooltip(self, active: bool = False) -> str:
         lang = SUPPORTED_LANGUAGES.get(self._settings.language, self._settings.language)
@@ -110,15 +110,14 @@ class TrayApp:
 
     def _build_menu(self) -> pystray.Menu:
         return pystray.Menu(
+            pystray.MenuItem("Dashboard", self._open_dashboard_click, default=True),
+            pystray.Menu.SEPARATOR,
             pystray.MenuItem(
                 lambda _: "Stop Listening" if self._is_active else "Start Listening",
                 self._toggle_click,
-                default=True,
             ),
-            pystray.Menu.SEPARATOR,
             pystray.MenuItem("Microphone", self._mic_submenu()),
             pystray.MenuItem("Model", self._model_submenu()),
-            pystray.MenuItem("Change Hotkey...", self._open_settings),
             pystray.MenuItem("Hotkey Mode", pystray.Menu(
                 pystray.MenuItem(
                     "Toggle (press once)",
@@ -294,12 +293,8 @@ class TrayApp:
             self._settings.save()
         return _set
 
-    def _open_settings(self, icon, item) -> None:
-        self._settings_window = SettingsWindow(
-            self._settings,
-            on_hotkey_changed=lambda: self._on_settings_changed(reload_model=False),
-        )
-        self._settings_window.show()
+    def _open_dashboard_click(self, icon, item) -> None:
+        open_dashboard(self._settings, self._on_settings_changed)
 
     def _toggle_click(self, icon, item) -> None:
         self._on_toggle()
