@@ -82,6 +82,7 @@ class VoiceTranscriber:
         self._audio_q: queue.Queue = queue.Queue()
         self._worker: Optional[threading.Thread] = None
         self._current_model_size: Optional[str] = None
+        self._mic_error: Optional[str] = None
 
     def set_callbacks(
         self,
@@ -145,15 +146,36 @@ class VoiceTranscriber:
                 except queue.Empty:
                     break
 
-            self._stream = sd.InputStream(
-                samplerate=SAMPLE_RATE,
-                channels=1,
-                dtype="float32",
-                blocksize=int(SAMPLE_RATE * CHUNK_DURATION),
-                device=self._settings.audio_device,
-                callback=self._audio_callback,
-            )
-            self._stream.start()
+            device = self._settings.audio_device
+            try:
+                self._stream = sd.InputStream(
+                    samplerate=SAMPLE_RATE,
+                    channels=1,
+                    dtype="float32",
+                    blocksize=int(SAMPLE_RATE * CHUNK_DURATION),
+                    device=device,
+                    callback=self._audio_callback,
+                )
+                self._stream.start()
+            except (sd.PortAudioError, Exception) as e:
+                log.warning("Mic device %s failed (%s), falling back to default.", device, e)
+                self._mic_error = str(e)
+                try:
+                    self._stream = sd.InputStream(
+                        samplerate=SAMPLE_RATE,
+                        channels=1,
+                        dtype="float32",
+                        blocksize=int(SAMPLE_RATE * CHUNK_DURATION),
+                        device=None,
+                        callback=self._audio_callback,
+                    )
+                    self._stream.start()
+                    log.info("Fallback to default mic succeeded.")
+                except Exception as e2:
+                    log.error("No microphone available: %s", e2)
+                    self._mic_error = str(e2)
+                    self._running = False
+                    return
 
             self._worker = threading.Thread(target=self._transcription_loop, daemon=True)
             self._worker.start()

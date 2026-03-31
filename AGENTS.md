@@ -38,6 +38,7 @@
   - `hotkey.py` -- global hotkey (keyboard library, toggle + hold modes)
   - `injector.py` -- text injection into active app (pynput + pyperclip + ctypes Win32 for window focus restore)
   - `tray.py` -- system tray icon and menu (pystray + Pillow), loads logo-based PNGs from `assets/`
+  - `settings_ui.py` -- hotkey customization window (dark-themed tkinter, press-to-capture)
   - `main.py` -- wires everything together, manages activate/deactivate lifecycle
 - Settings persist in `%AppData%\Eqho\settings.json`.
 
@@ -55,7 +56,7 @@
 - The current Python stack is for development velocity; whisper.cpp is for shipping.
 
 ## Versioning
-- Current version line: **v0.2.0** -- Phase 2 in progress.
+- Current version line: **v0.2.1** -- Phase 2 complete.
 - Tag releases as `vMAJOR.MINOR.PATCH` when publishing milestones.
 
 ## Public release strategy

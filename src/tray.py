@@ -1,6 +1,7 @@
 """System tray icon with menu for Eqho."""
 
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import Callable, Optional
@@ -8,8 +9,9 @@ from typing import Callable, Optional
 from PIL import Image, ImageDraw
 import pystray
 
-from .settings import Settings, SUPPORTED_LANGUAGES, WHISPER_MODELS, VOLUME_DUCK_OPTIONS
+from .settings import Settings, SUPPORTED_LANGUAGES, WHISPER_MODELS, VOLUME_DUCK_OPTIONS, OVERLAY_POSITIONS
 from .audio import list_input_devices
+from .settings_ui import SettingsWindow
 
 log = logging.getLogger(__name__)
 
@@ -76,12 +78,19 @@ class TrayApp:
         self._on_settings_changed = on_settings_changed
         self._icon: Optional[pystray.Icon] = None
         self._is_active = False
+        self._settings_window: Optional[SettingsWindow] = None
+
+    def _tooltip(self, active: bool = False) -> str:
+        lang = SUPPORTED_LANGUAGES.get(self._settings.language, self._settings.language)
+        hotkey = self._settings.hotkey.replace("+", "+").title()
+        base = f"Eqho — {hotkey} | {lang}"
+        return f"{base} — Listening..." if active else base
 
     def run(self) -> None:
         self._icon = pystray.Icon(
             "Eqho",
             icon=_load_icon(False),
-            title="Eqho",
+            title=self._tooltip(),
             menu=self._build_menu(),
         )
         self._icon.run()
@@ -90,8 +99,7 @@ class TrayApp:
         self._is_active = active
         if self._icon:
             self._icon.icon = _load_icon(active)
-            title = "Eqho - Listening..." if active else "Eqho"
-            self._icon.title = title
+            self._icon.title = self._tooltip(active)
 
     def notify(self, message: str) -> None:
         if self._icon:
@@ -110,6 +118,7 @@ class TrayApp:
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("Microphone", self._mic_submenu()),
             pystray.MenuItem("Model", self._model_submenu()),
+            pystray.MenuItem("Change Hotkey...", self._open_settings),
             pystray.MenuItem("Hotkey Mode", pystray.Menu(
                 pystray.MenuItem(
                     "Toggle (press once)",
@@ -142,6 +151,10 @@ class TrayApp:
             pystray.MenuItem("Volume While Speaking", self._volume_duck_submenu()),
             pystray.MenuItem("Show Overlay", self._toggle_overlay,
                              checked=lambda _: self._settings.overlay_enabled),
+            pystray.MenuItem("Overlay Position", self._overlay_position_submenu()),
+            pystray.Menu.SEPARATOR,
+            pystray.MenuItem("Start with Windows", self._toggle_startup,
+                             checked=lambda _: self._settings.start_with_windows),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("Quit", self._quit_click),
         )
@@ -224,6 +237,69 @@ class TrayApp:
             self._settings.volume_duck = key
             self._settings.save()
         return _set
+
+    def _overlay_position_submenu(self) -> pystray.Menu:
+        labels = {
+            "bottom-center": "Bottom Center",
+            "top-center": "Top Center",
+            "top-left": "Top Left",
+            "top-right": "Top Right",
+            "bottom-left": "Bottom Left",
+            "bottom-right": "Bottom Right",
+        }
+        items = []
+        for pos in OVERLAY_POSITIONS:
+            items.append(pystray.MenuItem(
+                labels.get(pos, pos),
+                self._make_overlay_pos_setter(pos),
+                checked=lambda _, p=pos: self._settings.overlay_position == p,
+                radio=True,
+            ))
+        return pystray.Menu(*items)
+
+    def _get_startup_command(self) -> str:
+        """Return the command to launch Eqho at startup."""
+        if getattr(sys, "frozen", False):
+            return f'"{sys.executable}"'
+        script = Path(sys.argv[0]).resolve()
+        return f'"{sys.executable}" "{script}"'
+
+    def _set_startup_registry(self, enable: bool) -> None:
+        """Add or remove Eqho from the Windows Run registry key."""
+        try:
+            import winreg
+            key_path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0,
+                                winreg.KEY_SET_VALUE | winreg.KEY_READ) as key:
+                if enable:
+                    winreg.SetValueEx(key, "Eqho", 0, winreg.REG_SZ, self._get_startup_command())
+                    log.info("Added Eqho to Windows startup.")
+                else:
+                    try:
+                        winreg.DeleteValue(key, "Eqho")
+                        log.info("Removed Eqho from Windows startup.")
+                    except FileNotFoundError:
+                        pass
+        except Exception as e:
+            log.error("Failed to update startup registry: %s", e)
+
+    def _toggle_startup(self, icon, item) -> None:
+        self._settings.start_with_windows = not self._settings.start_with_windows
+        self._settings.save()
+        self._set_startup_registry(self._settings.start_with_windows)
+
+    def _make_overlay_pos_setter(self, pos: str):
+        def _set(icon, item):
+            self._settings.overlay_position = pos
+            self._settings.save()
+        return _set
+
+    def _open_settings(self, icon, item) -> None:
+        self._settings_window = SettingsWindow(
+            self._settings,
+            on_hotkey_changed=lambda: self._on_settings_changed(reload_model=False),
+        )
+        self._settings_window.show()
 
     def _toggle_click(self, icon, item) -> None:
         self._on_toggle()

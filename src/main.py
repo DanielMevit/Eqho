@@ -130,7 +130,16 @@ class App:
         self._pending_text.clear()
         self.overlay.show("Listening...")
         self.tray.set_active(True)
+        self.transcriber._mic_error = None
         self.transcriber.start()
+        if self.transcriber._mic_error:
+            if not self.transcriber.is_running():
+                self.tray.notify(f"No microphone available: {self.transcriber._mic_error}")
+                self.overlay.hide()
+                self.tray.set_active(False)
+                self._restore_volume()
+            else:
+                self.tray.notify("Selected mic unavailable, using default microphone.")
 
     def deactivate(self) -> None:
         log.info("Dictation deactivated")
@@ -163,8 +172,12 @@ class App:
         log.info("Settings changed, re-registering hotkey%s", " and reloading model" if reload_model else "")
         self.hotkey.unregister()
         self.hotkey.register()
+        self.tray.set_active(self._is_active())
         if reload_model:
             self.transcriber.reload_model()
+
+    def _is_active(self) -> bool:
+        return self.transcriber.is_running()
 
     # -- Lifecycle -------------------------------------------------------------
 
@@ -184,13 +197,39 @@ class App:
 
         self.tray.run()
 
+    def _model_is_cached(self) -> bool:
+        """Check if the current model has already been downloaded."""
+        from .settings import MODEL_CACHE_DIR
+        model = self.settings.model_size
+        # faster-whisper stores models via huggingface_hub or directly
+        cache_dir = MODEL_CACHE_DIR
+        # Check for direct model folder or huggingface cache entry
+        for candidate in [
+            cache_dir / model,
+            cache_dir / f"models--Systran--faster-whisper-{model}",
+            cache_dir / f"models--ctranslate2-4you--distil-whisper-{model}",
+            cache_dir / "huggingface" / f"models--Systran--faster-whisper-{model}",
+            cache_dir / "huggingface" / f"models--ctranslate2-4you--distil-whisper-{model}",
+        ]:
+            if candidate.exists():
+                return True
+        return False
+
     def _preload_model(self) -> None:
         try:
-            log.info("Pre-loading model (this may download ~1.5 GB on first run)...")
+            needs_download = not self._model_is_cached()
+            if needs_download:
+                log.info("Model not cached, downloading (this may take a few minutes)...")
+                self.tray.notify(f"Downloading model '{self.settings.model_size}'... this may take a few minutes.")
+            else:
+                log.info("Pre-loading model from cache...")
             self.transcriber._ensure_model()
             log.info("Model pre-loaded and ready.")
+            if needs_download:
+                self.tray.notify("Model downloaded and ready!")
         except Exception as e:
             log.error("Failed to pre-load model: %s", e)
+            self.tray.notify(f"Failed to load model: {e}")
 
     def quit(self) -> None:
         log.info("Shutting down...")

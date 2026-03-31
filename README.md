@@ -55,11 +55,16 @@ The app will:
 
 Right-click the tray icon for:
 - **Start/Stop Listening** -- toggle dictation (same as hotkey)
+- **Microphone** -- pick which mic to use
 - **Model** -- switch between Distil (English), Turbo, Medium, Small, Base, Tiny, Large v3
+- **Change Hotkey...** -- open the settings window to capture a new hotkey combo
 - **Hotkey Mode** -- switch between toggle and hold-to-talk
 - **Paste Mode** -- clipboard paste (fast) or simulated typing
 - **Language** -- switch transcription language
+- **Volume While Speaking** -- mute or reduce system volume during dictation
 - **Show Overlay** -- toggle the floating preview bar
+- **Overlay Position** -- choose where the overlay appears (bottom-center, top-center, corners)
+- **Start with Windows** -- auto-launch Eqho on login
 - **Quit** -- exit the app
 
 ## Configuration
@@ -76,6 +81,9 @@ Settings are saved to `%APPDATA%\Eqho\settings.json` and persist across sessions
 | `overlay_enabled` | `true` | Show floating transcription bar |
 | `overlay_opacity` | `0.85` | Overlay window opacity |
 | `overlay_font_size` | `14` | Overlay text size |
+| `overlay_position` | `bottom-center` | Overlay screen position |
+| `volume_duck` | `mute` | Volume during dictation: off, 50%, 25%, 10%, mute |
+| `start_with_windows` | `false` | Auto-start on Windows login |
 
 ## Models
 
@@ -117,6 +125,7 @@ Eqho/
     hotkey.py           -- global hotkey listener
     injector.py         -- text injection into active app (with window focus restore)
     tray.py             -- system tray icon & menu
+    settings_ui.py      -- hotkey customization window (dark theme)
   assets/
     icon_64.png         -- tray icon (full brightness)
     icon_64_active.png  -- tray icon (active/listening)

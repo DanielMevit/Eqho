@@ -4,6 +4,19 @@ All notable changes to Eqho are tracked here.
 
 Date format: `YYYY-MM-DD`.
 
+## [0.2.1] - 2026-03-31
+
+### Added
+- **Hotkey customization UI** — dark-themed settings window with press-to-capture key binding. Open via tray menu "Change Hotkey...".
+- **Start with Windows** toggle in tray menu — adds/removes Eqho from the Windows registry Run key.
+- **Model download progress notification** — tray notification when a model is being downloaded for the first time, and again when ready.
+- **Graceful microphone error handling** — if the selected mic is unavailable, falls back to the system default and notifies the user. If no mic is available at all, shows an error notification.
+- **Overlay position preference** — choose where the transcription overlay appears: bottom-center (default), top-center, or any corner. Configurable via tray menu.
+- **Tray tooltip** — hovering the tray icon now shows the current hotkey and language (e.g. "Eqho — Alt+Q | English").
+
+### Changed
+- Settings window uses VoiceOS-inspired dark theme (dark navy background, accent highlights, clean typography).
+
 ## [0.2.0] - 2026-03-31
 
 ### Changed

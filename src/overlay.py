@@ -93,13 +93,29 @@ class TranscriptionOverlay:
         h = self._label.winfo_reqheight() + 2 * _PADDING_Y
         sw = self._root.winfo_screenwidth()
         sh = self._root.winfo_screenheight()
-        x = (sw - w) // 2
-        y = sh - h - _MARGIN_BOTTOM
+        x, y = self._calc_position(w, h, sw, sh)
         self._root.geometry(f"{w}x{h}+{x}+{y}")
 
         if not self._visible:
             self._root.deiconify()
             self._visible = True
+
+    def _calc_position(self, w: int, h: int, sw: int, sh: int) -> tuple[int, int]:
+        """Calculate overlay x, y based on the position preference."""
+        pos = self._settings.overlay_position
+        margin = _MARGIN_BOTTOM
+        if pos == "top-center":
+            return (sw - w) // 2, margin
+        elif pos == "top-left":
+            return margin, margin
+        elif pos == "top-right":
+            return sw - w - margin, margin
+        elif pos == "bottom-left":
+            return margin, sh - h - margin
+        elif pos == "bottom-right":
+            return sw - w - margin, sh - h - margin
+        else:  # bottom-center (default)
+            return (sw - w) // 2, sh - h - margin
 
     def update_text(self, text: str) -> None:
         if not self._root:

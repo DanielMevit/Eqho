@@ -16,18 +16,18 @@ Planned features and milestones for Eqho.
 - [x] Tray icon from project logo (active/inactive states)
 - [x] Distil-Whisper as default (English-optimized, fastest high-quality model)
 
-## Phase 2 -- Polish & Reliability (v0.2.x) [in progress]
+## Phase 2 -- Polish & Reliability (v0.2.x) [done]
 - [x] Audio device selector in tray menu (pick which microphone)
 - [x] Volume while speaking (mute/50%/25%/10%/off via pycaw)
 - [x] Hotkey rewrite — hold mode uses keyboard.hook() to avoid library bug, toggle has 400ms debounce
 - [x] Window focus capture/restore for correct paste target
 - [x] Rename from Ekho to Eqho (code, docs, config paths, build scripts)
-- [ ] Hotkey customization UI (press-to-capture in a settings window)
-- [ ] Startup with Windows toggle (registry-based)
-- [ ] Notification on model download progress (first run)
-- [ ] Graceful error handling for missing microphone
-- [ ] Overlay position preference (bottom-center, top-center, corner)
-- [ ] Tray tooltip showing current hotkey and language
+- [x] Hotkey customization UI (press-to-capture in a settings window)
+- [x] Startup with Windows toggle (registry-based)
+- [x] Notification on model download progress (first run)
+- [x] Graceful error handling for missing microphone
+- [x] Overlay position preference (bottom-center, top-center, corner)
+- [x] Tray tooltip showing current hotkey and language
 
 ## Phase 3 -- Advanced Features (v0.3.x)
 - [ ] Transcript history log (save past dictations to a local file)
