@@ -52,18 +52,36 @@ powershell -ExecutionPolicy Bypass -File build.ps1
 # Output: dist\Eqho.exe
 ```
 
-## Git
+## Git — Two-Repo Workflow
 
 ```powershell
+# You have two remotes:
+#   origin  → github.com/DanielMevit/Eqho          (PUBLIC)
+#   private → github.com/DanielMevit/Eqho-private   (private)
+#
+# Two branches:
+#   dev  → daily work (default push goes to private)
+#   main → public releases only
+
 # Check status
 git status
 
-# Add and commit
+# Check which branch you're on
+git branch
+
+# --- Daily work (on dev branch) ---
 git add .
 git commit -m "description of changes"
+git push                          # pushes dev → private repo
 
-# Push to GitHub
-git push origin main
+# --- Publish to public repo ---
+git checkout main
+git merge dev
+git push origin main              # pushes main → public repo
+git checkout dev                  # switch back to work
+
+# --- Sync private repo's main (if needed) ---
+git push private main
 ```
 
 ## CUDA (GPU acceleration)
