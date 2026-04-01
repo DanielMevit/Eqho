@@ -25,6 +25,20 @@ An always-on dictation app that runs in your system tray. Press a hotkey, speak,
 - **Settings dashboard** -- modern customtkinter window with sidebar navigation, theme switching, model cards, responsive layout
 - **Theme system** -- dark, light, and system (auto-detect) modes
 
+## Supported Languages
+
+| Language | Code | Language | Code |
+|----------|------|----------|------|
+| English | `en` | Arabic | `ar` |
+| Spanish | `es` | Ukrainian | `uk` |
+| Mandarin | `zh` | French | `fr` |
+| Japanese | `ja` | German | `de` |
+| Korean | `ko` | Portuguese | `pt` |
+| Vietnamese | `vi` | Russian | `ru` |
+| Italian | `it` | | |
+
+Distil models (`distil-large-v3`, `distil-medium.en`, `distil-small.en`) are optimized for English. For other languages, use a multilingual model like `large-v3-turbo` or `medium`.
+
 ## Prerequisites
 
 - **Python 3.10+**
