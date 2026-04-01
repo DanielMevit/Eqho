@@ -77,7 +77,7 @@ The app will:
 
 Eqho uses OpenAI's Whisper models for speech recognition. Whisper is known to occasionally hallucinate — producing words, phrases, or repeated text that were not actually spoken. This is a [documented limitation](https://github.com/openai/whisper/discussions/928) of the Whisper model family, not specific to Eqho. It tends to happen more with background noise, silence, or non-English languages. Smaller models are more prone to this than larger ones.
 
-Fair warning: in my experience, the model is sometimes a little too polite — it loves to throw in a "thank you, thank you" when nobody said a thing. I'm still not sure if I should feel flattered or concerned.
+In my case, the model can be a bit too nice — it keeps printing "thank you, thank you" when nobody said anything. At this point I'm somewhere between grateful and terrified.
 
 ## System Tray Menu
 
