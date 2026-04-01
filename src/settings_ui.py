@@ -1,6 +1,5 @@
 """Dark-themed settings window with press-to-capture hotkey binding.
 
-Design inspired by VoiceOS: dark background, clean type, accent highlights.
 Uses tkinter since it's already a dependency (overlay uses it).
 """
 
@@ -16,7 +15,7 @@ from .settings import Settings
 
 log = logging.getLogger(__name__)
 
-# VoiceOS-inspired palette
+# Eqho dark palette
 _BG = "#0f0f1a"
 _BG_CARD = "#1a1a2e"
 _BG_INPUT = "#252540"

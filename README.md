@@ -2,6 +2,8 @@
 
 **Your voice, everywhere.**
 
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
 An always-on dictation app that runs in your system tray. Press a hotkey, speak, and your words are typed into whatever application is focused. Powered by [faster-whisper](https://github.com/SYSTRAN/faster-whisper) -- a fast, accurate, on-device speech-to-text engine built on OpenAI's Whisper model via CTranslate2.
 
 ## Features
@@ -107,16 +109,16 @@ The app auto-detects CUDA. If `cublas64_12.dll` is not found, it logs a warning 
 
 ```
 Eqho/
-  SOUL.md              -- agent identity & standards
-  AGENTS.md            -- workflow rules for this repo
   README.md            -- this file
   CHANGELOG.md         -- timestamped release notes
   ROADMAP.md           -- planned features & milestones
-  TODO.md              -- manual steps for Daniel
+  COMMANDS.md          -- PowerShell command reference
+  LICENSE              -- AGPL-3.0 license
   requirements.txt     -- Python dependencies
   run.py               -- top-level launcher
   Eqho.spec            -- PyInstaller config
   build.ps1            -- build script for standalone .exe
+  agent-instructions/  -- internal agent guidance (SOUL, AGENTS, TODO)
   src/
     __init__.py
     __main__.py         -- python -m src support
@@ -178,3 +180,11 @@ The executable will be at `dist\Eqho.exe`. To start automatically with Windows, 
 ## Changelog
 
 For timestamped release notes, see `CHANGELOG.md`.
+
+## Disclaimer
+
+This software is provided "as is", without warranty of any kind. Use at your own risk. The author is not responsible for any damages, data loss, or other issues arising from the use of this software.
+
+## License
+
+Eqho is licensed under the [GNU Affero General Public License v3.0](LICENSE).

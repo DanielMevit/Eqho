@@ -1,8 +1,7 @@
-"""Design tokens and theme system for Eqho.
+"""Eqho Design System — tokens and theme engine.
 
 Three modes: dark, light, system (auto-detects Windows theme).
-Inspired by GitHub's design system (neutral, functional) with VoiceOS
-influence (rounded, spacious). Accent is a soft blue, not GitHub green.
+Neutral, functional palette with rounded, spacious feel.
 """
 
 from dataclasses import dataclass
@@ -18,7 +17,7 @@ RADIUS_MD = 10     # cards, panels, dropdowns
 RADIUS_LG = 14     # overlay bar, modal windows, dashboard frame
 RADIUS_XL = 18     # pill switcher, large containers
 
-ACCENT = "#58a6ff"          # soft blue (GitHub-adjacent, not identical)
+ACCENT = "#58a6ff"          # Eqho blue
 ACCENT_HOVER = "#79b8ff"
 ACCENT_MUTED = "#1f3a5f"    # dark mode accent bg
 ACCENT_LIGHT_MUTED = "#dbeafe"  # light mode accent bg

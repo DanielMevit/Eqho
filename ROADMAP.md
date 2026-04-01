@@ -66,11 +66,10 @@ Migrate from Python + faster-whisper to a native engine for a clean, distributab
 - Current faster-whisper stack is ideal for development velocity; whisper.cpp is for shipping
 
 ## Phase 5 -- Public Launch Prep (v1.0)
-This is the final gate before going public. Internal .md files (SOUL, AGENTS, ROADMAP, TODO) stay private.
-- [ ] Remove or relocate internal docs (SOUL.md, AGENTS.md, ROADMAP.md, TODO.md) from the public repo
+- [x] Relocate internal docs to `agent-instructions/`
+- [x] Add AGPL-3.0 license
 - [ ] Write a clean public README with screenshots, feature highlights, and install instructions
 - [ ] Create a GitHub Releases page with pre-built installer
-- [ ] Add LICENSE file (pick license -- MIT, Apache 2.0, etc.)
 - [ ] Add CONTRIBUTING.md if accepting community contributions
 - [ ] Optional: simple landing page (GitHub Pages or standalone)
 - [ ] Optional: demo GIF / video showing Eqho in action

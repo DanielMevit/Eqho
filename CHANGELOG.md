@@ -27,7 +27,7 @@ Date format: `YYYY-MM-DD`.
 ### Added
 - **Dashboard** — full settings window with sidebar navigation (General, Overlay, Models, History, About). Built on customtkinter for modern rounded widgets.
 - **Theme system** — dark, light, and system (auto-detects Windows theme) modes. Horizontal pill switcher in the dashboard sidebar ("Light / Dark / System"). Theme applies to dashboard and overlay.
-- **Design tokens** — consistent color palette, spacing, and radius tokens inspired by GitHub's design system with VoiceOS influence. Accent: soft blue (#58a6ff).
+- **Eqho Design System** — consistent color palette, spacing, and radius tokens. Accent: Eqho blue (#58a6ff).
 - **Model cards** in Models tab — detailed info per model with download status, language scope, size, device, recommendation text. Select directly from cards.
 - **Overlay tab** — dedicated settings page with enable/disable switch, position dropdown, opacity slider, font size slider.
 - **History tab** (placeholder) — coming in Phase 3, shows planned features.
