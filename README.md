@@ -59,6 +59,10 @@ The app will:
 4. The overlay updates with your transcribed words
 5. Press **Alt+Q** again to stop -- text is pasted into the focused app
 
+## Note on Transcription Accuracy
+
+Eqho uses OpenAI's Whisper models for speech recognition. Whisper is known to occasionally hallucinate — producing words, phrases, or repeated text that were not actually spoken. This is a [documented limitation](https://github.com/openai/whisper/discussions/928) of the Whisper model family, not specific to Eqho. It tends to happen more with background noise, silence, or non-English languages. Smaller models are more prone to this than larger ones.
+
 ## System Tray Menu
 
 Right-click the tray icon for:
