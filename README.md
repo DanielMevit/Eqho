@@ -10,21 +10,6 @@
 
 An always-on dictation app that runs in your system tray. Press a hotkey, speak, and your words are typed into whatever application is focused. Powered by [faster-whisper](https://github.com/SYSTRAN/faster-whisper) -- a fast, accurate, on-device speech-to-text engine built on OpenAI's Whisper model via CTranslate2.
 
-## Features
-
-- **Real-time transcription** -- see words appear as you speak via a floating overlay
-- **100% local** -- no cloud, no API keys, everything runs on your machine
-- **System tray** -- runs silently in the background
-- **Global hotkey** -- works in any application (default: `Alt+Q`)
-- **Toggle or hold-to-talk** modes
-- **Auto-paste** into the active window via clipboard or simulated keystrokes
-- **Multi-language** -- English, Spanish, Mandarin, Japanese, Korean, Vietnamese, Arabic, Ukrainian, French, German, Portuguese, Russian, Italian
-- **Model selection** -- Distil-Whisper (English-optimized), Large v3 Turbo, Medium, Small, Base, Tiny, Large v3
-- **GPU acceleration** -- uses CUDA when available (NVIDIA GPUs), falls back to CPU gracefully
-- **English-optimized default** -- ships with Distil-Large-v3 (6x faster than Large v3, <1% accuracy loss)
-- **Settings dashboard** -- modern customtkinter window with sidebar navigation, theme switching, model cards, responsive layout
-- **Theme system** -- dark, light, and system (auto-detect) modes
-
 ## Supported Languages
 
 | Language | Code | Language | Code |
@@ -38,6 +23,21 @@ An always-on dictation app that runs in your system tray. Press a hotkey, speak,
 | Italian | `it` | | |
 
 Distil models (`distil-large-v3`, `distil-medium.en`, `distil-small.en`) are optimized for English. For other languages, use a multilingual model like `large-v3-turbo` or `medium`.
+
+## Features
+
+- **Real-time transcription** -- see words appear as you speak via a floating overlay
+- **100% local** -- no cloud, no API keys, everything runs on your machine
+- **System tray** -- runs silently in the background
+- **Global hotkey** -- works in any application (default: `Alt+Q`)
+- **Toggle or hold-to-talk** modes
+- **Auto-paste** into the active window via clipboard or simulated keystrokes
+- **Multi-language** -- 13 languages supported (see above)
+- **Model selection** -- Distil-Whisper (English-optimized), Large v3 Turbo, Medium, Small, Base, Tiny, Large v3
+- **GPU acceleration** -- uses CUDA when available (NVIDIA GPUs), falls back to CPU gracefully
+- **English-optimized default** -- ships with Distil-Large-v3 (6x faster than Large v3, <1% accuracy loss)
+- **Settings dashboard** -- modern customtkinter window with sidebar navigation, theme switching, model cards, responsive layout
+- **Theme system** -- dark, light, and system (auto-detect) modes
 
 ## Prerequisites
 
