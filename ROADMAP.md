@@ -31,6 +31,15 @@ Planned features and milestones for Eqho.
 - [x] **Dashboard** — customtkinter settings window with sidebar nav, theme system, model cards, singleton behavior
 - [x] **Inter font** bundled as standard app typeface
 - [x] **Theme system** — dark, light, system (auto-detect from Windows registry)
+- [x] **Responsive dashboard** — resizable window, 2→3 column grid layout with breakpoints
+- [x] **New logo assets** — horizontal wordmark, 32px/62px "e" mark variants
+- [x] **Overlay rounded corners** — Windows 11 DWM API
+- [x] **Light theme contrast** — improved bg/fg hierarchy, darker text, visible borders
+- [x] **Custom dropdown widget** — ThemedDropdown replaces native tkinter.Menu popups
+- [x] **Dashboard not always-on-top** — dashboard window no longer stays above all windows
+- [x] **About tab responsive** — 2-column grid layout on wider windows
+- [x] **Tray icon theme detection** — reads Windows registry for taskbar light/dark mode
+- [x] **Window title bar icon** — set from new logo PNGs via iconphoto()
 
 ## Phase 3 -- Advanced Features (v0.3.x)
 - [ ] Transcript history log (save past dictations to a local file)

@@ -16,6 +16,8 @@ An always-on dictation app that runs in your system tray. Press a hotkey, speak,
 - **Model selection** -- Distil-Whisper (English-optimized), Large v3 Turbo, Medium, Small, Base, Tiny, Large v3
 - **GPU acceleration** -- uses CUDA when available (NVIDIA GPUs), falls back to CPU gracefully
 - **English-optimized default** -- ships with Distil-Large-v3 (6x faster than Large v3, <1% accuracy loss)
+- **Settings dashboard** -- modern customtkinter window with sidebar navigation, theme switching, model cards, responsive layout
+- **Theme system** -- dark, light, and system (auto-detect) modes
 
 ## Prerequisites
 
@@ -131,9 +133,15 @@ Eqho/
     theme.py            -- design tokens, color palettes, theme system
     fonts.py            -- Inter font loader (Windows AddFontResourceEx)
   assets/
-    icon_64.png         -- tray icon (full brightness)
-    icon_64_active.png  -- tray icon (active/listening)
-    icon_64_inactive.png -- tray icon (dimmed/idle)
+    icon_64.png         -- legacy tray icon (full brightness)
+    icon_64_active.png  -- legacy tray icon (active/listening)
+    icon_64_inactive.png -- legacy tray icon (dimmed/idle)
+    logo_62_dark.png    -- tray icon (62px "e" mark, blue on transparent)
+    logo_62_white.png   -- tray icon (62px "e" mark, white on transparent)
+    logo_32_dark.png    -- small logo (32px "e" mark, blue)
+    logo_32_white.png   -- small logo (32px "e" mark, white)
+    logo_horizontal_dark.png  -- wordmark (140x60, dark text for light theme)
+    logo_horizontal_light.png -- wordmark (140x60, light text for dark theme)
     eqho.ico            -- Windows .ico for packaged .exe
     fonts/
       Inter-*.otf       -- Inter font family (Regular, Medium, SemiBold, Bold)

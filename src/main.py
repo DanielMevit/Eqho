@@ -241,6 +241,9 @@ class App:
 
     def quit(self) -> None:
         log.info("Shutting down...")
+        # Close dashboard first to avoid tkinter Variable.__del__ errors
+        from .dashboard import shutdown_dashboard
+        shutdown_dashboard()
         self._restore_volume()  # always unmute on exit
         self.hotkey.unregister()
         self.transcriber.shutdown()
@@ -260,9 +263,32 @@ def _emergency_unmute() -> None:
         pass
 
 
+def _suppress_tk_variable_del() -> None:
+    """Patch tkinter Variable.__del__ to suppress RuntimeError on shutdown.
+
+    When the dashboard thread's Tcl interpreter is gone, garbage-collected
+    StringVar/BooleanVar objects raise 'main thread is not in main loop'.
+    This is harmless — suppress it to avoid log spam.
+    """
+    try:
+        import tkinter as tk
+        _original_del = tk.Variable.__del__
+
+        def _safe_del(self):
+            try:
+                _original_del(self)
+            except (RuntimeError, AttributeError, TypeError):
+                pass
+
+        tk.Variable.__del__ = _safe_del
+    except Exception:
+        pass
+
+
 def main() -> None:
     import atexit
     atexit.register(_emergency_unmute)
+    _suppress_tk_variable_del()
 
     app = App()
     try:

@@ -1,10 +1,12 @@
 """Floating transparent overlay showing real-time partial transcription.
 
 Uses a frameless tkinter window. Theme-aware colors from theme.py.
-Rounded appearance via a padded inner frame.
+Rounded corners via Windows 11 DWM API (DWMWA_WINDOW_CORNER_PREFERENCE).
 """
 
+import ctypes
 import logging
+import sys
 import threading
 import tkinter as tk
 from typing import Optional
@@ -19,6 +21,22 @@ _PADDING_X = 18
 _PADDING_Y = 10
 _MARGIN = 60
 _MIN_WIDTH = 300
+
+
+def _apply_rounded_corners(hwnd: int) -> None:
+    """Apply rounded corners via Windows 11 DWM API. No-op on older Windows."""
+    try:
+        DWMWA_WINDOW_CORNER_PREFERENCE = 33
+        DWMWCP_ROUND = 2
+        preference = ctypes.c_int(DWMWCP_ROUND)
+        ctypes.windll.dwmapi.DwmSetWindowAttribute(
+            hwnd,
+            DWMWA_WINDOW_CORNER_PREFERENCE,
+            ctypes.byref(preference),
+            ctypes.sizeof(preference),
+        )
+    except Exception:
+        pass
 
 
 class TranscriptionOverlay:
@@ -54,8 +72,12 @@ class TranscriptionOverlay:
         self._root.attributes("-topmost", True)
         self._root.attributes("-alpha", self._settings.overlay_opacity)
 
-        # Transparent root — the visual shape comes from the inner frame
         self._root.configure(bg=bg)
+
+        # Apply rounded corners (Windows 11+)
+        self._root.update_idletasks()
+        hwnd = ctypes.windll.user32.GetParent(self._root.winfo_id())
+        _apply_rounded_corners(hwnd)
 
         frame = tk.Frame(self._root, bg=bg, padx=_PADDING_X, pady=_PADDING_Y)
         frame.pack(fill=tk.BOTH, expand=True)

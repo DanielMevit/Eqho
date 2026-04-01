@@ -18,8 +18,52 @@ log = logging.getLogger(__name__)
 _ASSETS = Path(__file__).resolve().parent.parent / "assets"
 
 
+def _get_taskbar_theme() -> str:
+    """Detect Windows taskbar light/dark mode. Returns 'dark' or 'light'."""
+    try:
+        import winreg
+        key = winreg.OpenKey(
+            winreg.HKEY_CURRENT_USER,
+            r"SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize",
+        )
+        value, _ = winreg.QueryValueEx(key, "SystemUsesLightTheme")
+        winreg.CloseKey(key)
+        return "light" if value == 1 else "dark"
+    except Exception:
+        return "dark"
+
+
 def _load_icon(active: bool = False) -> Image.Image:
-    """Load pre-rendered icon PNGs, fall back to programmatic generation."""
+    """Load the 'e' logo for the tray icon.
+
+    Picks white icon on dark taskbar, blue icon on light taskbar.
+    Dims to 40% brightness for inactive state.
+    Falls back to legacy icon_64 PNGs, then programmatic generation.
+    """
+    # Pick variant based on taskbar theme
+    taskbar = _get_taskbar_theme()
+    if taskbar == "dark":
+        new_logo = _ASSETS / "logo_62_white.png"  # white on dark taskbar
+    else:
+        new_logo = _ASSETS / "logo_62_dark.png"   # blue on light taskbar
+
+    if new_logo.exists():
+        img = Image.open(new_logo).convert("RGBA")
+        if not active:
+            from PIL import ImageEnhance
+            img = ImageEnhance.Brightness(img).enhance(0.4)
+        return img
+
+    # Fallback to the other variant
+    fallback = _ASSETS / "logo_62_dark.png"
+    if fallback.exists():
+        img = Image.open(fallback).convert("RGBA")
+        if not active:
+            from PIL import ImageEnhance
+            img = ImageEnhance.Brightness(img).enhance(0.4)
+        return img
+
+    # Legacy fallback
     if active:
         path = _ASSETS / "icon_64_active.png"
     else:

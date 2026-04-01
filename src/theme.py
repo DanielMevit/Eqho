@@ -100,15 +100,15 @@ DARK = ThemeColors(
 )
 
 LIGHT = ThemeColors(
-    bg_primary="#ffffff",
-    bg_secondary="#f6f8fa",
-    bg_tertiary="#eaeef2",
-    bg_hover="#d0d7de",
-    fg_primary="#1f2328",
-    fg_secondary="#656d76",
-    fg_muted="#8b949e",
-    border="#d0d7de",
-    border_subtle="#eaeef2",
+    bg_primary="#f0f2f5",       # gray canvas (main background)
+    bg_secondary="#ffffff",     # white cards, sidebar
+    bg_tertiary="#e4e8ec",      # inputs, nested elements
+    bg_hover="#d0d5dc",         # hover states
+    fg_primary="#1f2328",       # main text (near-black)
+    fg_secondary="#4d5562",     # labels, descriptions (darker than before)
+    fg_muted="#6e7681",         # placeholders, disabled (darker)
+    border="#c9cfd6",           # borders (more visible)
+    border_subtle="#dce1e6",    # subtle separators
     accent="#0969da",
     accent_hover="#0550ae",
     accent_muted=ACCENT_LIGHT_MUTED,
