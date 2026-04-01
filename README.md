@@ -1,8 +1,15 @@
-# Eqho
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="logo/logo_horizontal_light.png">
+    <source media="(prefers-color-scheme: light)" srcset="logo/logo_horizontal_dark.png">
+    <img alt="Eqho" src="logo/logo_horizontal_dark.png" width="280">
+  </picture>
+</p>
 
-**Your voice, everywhere.**
-
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+<p align="center">
+  <strong>Your voice, everywhere.</strong><br>
+  <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/License-AGPL_v3-blue.svg" alt="License: AGPL v3"></a>
+</p>
 
 An always-on dictation app that runs in your system tray. Press a hotkey, speak, and your words are typed into whatever application is focused. Powered by [faster-whisper](https://github.com/SYSTRAN/faster-whisper) -- a fast, accurate, on-device speech-to-text engine built on OpenAI's Whisper model via CTranslate2.
 
@@ -149,7 +156,14 @@ Eqho/
       Inter-*.otf       -- Inter font family (Regular, Medium, SemiBold, Bold)
       LICENSE-Inter.txt  -- SIL Open Font License
   logo/
-    eqho_logo.svg       -- project logo (waveform, cyan-to-green gradient)
+    eqho_logo.svg       -- project logo (vector source)
+    eqho_logo.ai        -- project logo (Illustrator source)
+    logo_horizontal_dark.png  -- wordmark for light backgrounds
+    logo_horizontal_light.png -- wordmark for dark backgrounds
+    logo_32_dark.png    -- 32px mark (blue)
+    logo_32_white.png   -- 32px mark (white)
+    logo_62_dark.png    -- 62px mark (blue)
+    logo_62_white.png   -- 62px mark (white)
 ```
 
 ## Building a Standalone .exe
