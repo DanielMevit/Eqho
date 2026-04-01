@@ -1,15 +1,12 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="logo/logo_horizontal_light.png">
-    <source media="(prefers-color-scheme: light)" srcset="logo/logo_horizontal_dark.png">
-    <img alt="Eqho" src="logo/logo_horizontal_dark.png" width="280">
-  </picture>
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="logo/logo_horizontal_light.png">
+  <source media="(prefers-color-scheme: light)" srcset="logo/logo_horizontal_dark.png">
+  <img alt="Eqho" src="logo/logo_horizontal_dark.png" width="140">
+</picture>
 
-<p align="center">
-  <strong>Your voice, everywhere.</strong><br>
-  <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/License-AGPL_v3-blue.svg" alt="License: AGPL v3"></a>
-</p>
+**Your voice, everywhere.**
+
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 An always-on dictation app that runs in your system tray. Press a hotkey, speak, and your words are typed into whatever application is focused. Powered by [faster-whisper](https://github.com/SYSTRAN/faster-whisper) -- a fast, accurate, on-device speech-to-text engine built on OpenAI's Whisper model via CTranslate2.
 
